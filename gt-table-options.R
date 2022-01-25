@@ -1,31 +1,12 @@
+# https://themockup.blog/static/gt-cookbook.html
+# 
+
 gt() %>% 
   
   # column alignment
   cols_align(
     align = "left" 
   ) %>%
-  tab_style(
-    style = cell_borders(
-      sides = 'right',
-      color = "#000000",
-      weight = px(1.4),
-      style = "solid"
-    ),
-    locations = cells_body(
-      columns = 
-    )
-  ) %>%
-  
-  # column border for cells and labels
-  tab_style(
-    style = cell_borders(
-      sides = 'right',
-      color = "#000000",
-      weight = px(1.4),
-      style = "solid"
-    ),
-    locations = cells_column_labels()
-  )  %>% 
   
   # convert path to .png
   text_transform(
@@ -49,49 +30,27 @@ gt() %>%
     decimals = 1
   ) %>%
   
-  # change row color
-  tab_style(
-    style = list(
-      cell_fill(color = "#f2f2f2")
-    ),
-    locations = cells_body(
-      rows = seq(1,9,2)
-    )
-  ) %>%
-  
-  # change column labels, old_name = new_name
+  # change column labels, old=new
   cols_label(
     ) %>% 
   
-  # title, subtitle
+  # md(): 4 stars for bold, 2 for italic, <br> for new line
+  # title, subtitle 
   tab_header(
-    title=md("****"),
-    subtitle=md("**")
+    title=,
+    subtitle=
   ) %>% 
   
   # caption
   tab_source_note(
-    md("")
+    source_note=
   ) %>% 
   
-  # other table options
+  # modify table options
   tab_options(
-    heading.title.font.size = 32,
-    heading.subtitle.font.size = 17,
-    heading.align = "left",
-    column_labels.font.size = 16,
-    column_labels.font.weight = 'bold',
-    table.font.size = 15,
-    data_row.padding = px(3),
-    table.border.top.width = px(2),
-    table.border.bottom.width = px(2),
-    column_labels.border.top.width = px(1.4),
-    column_labels.border.bottom.width = px(1.4),
-    table_body.border.bottom.width = px(1.4)
   ) %>% 
   
   # add a Google font
   opt_table_font(
-    font = list(
-      google_font(name = "Roboto"),
-      default_fonts())) 
+    font = google_font("Roboto")
+  ) 
