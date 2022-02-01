@@ -1,5 +1,5 @@
 # https://themockup.blog/static/gt-cookbook.html
-# 
+# https://gt.rstudio.com/articles/intro-creating-gt-tables.html
 
 gt() %>% 
   
