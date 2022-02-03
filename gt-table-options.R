@@ -2,7 +2,7 @@
 # https://gt.rstudio.com/articles/intro-creating-gt-tables.html
 
 gt() %>% 
-
+  #
   cols_align(
     align = "left" 
   ) %>%
