@@ -1,5 +1,4 @@
-library(dplyr)
-library(rvest)
+library(tidyverse)
 
 # get team names and abbreviations
 url = 'https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations'
