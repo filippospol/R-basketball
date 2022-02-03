@@ -1,5 +1,9 @@
 # http://www.sthda.com/english/wiki/ggplot2-essentials
 # https://www.datanovia.com/en/blog/category/ggplot2/
+# https://mran.microsoft.com/snapshot/2018-05-23/web/packages/ggimage/vignettes/ggimage.html
+# https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html
+# https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
+# https://patchwork.data-imaginist.com/
 
 font_add_google(name = "Roboto", family = "Roboto")
 showtext_auto()
