@@ -1,4 +1,5 @@
 library(tidyverse)
+library(janitor)
 
 # get team names and abbreviations
 url = 'https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations'
@@ -10,7 +11,7 @@ team_char = url %>%
   `[[`(1) %>% 
   mutate(X1 = ifelse(X1=='Abbreviation/Acronym', 'TEAM_ABBR',X1),
          X2 = ifelse(X2=='Franchise', 'TEAM_NAME',X2)) %>% 
-  janitor::row_to_names(row_number = 1)
+  row_to_names(row_number = 1)
 
 
 # create two objects:
