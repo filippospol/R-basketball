@@ -21,7 +21,7 @@ bbrefStandings[[1]] <- bbrefStandings[[1]] %>%
          PRE_ALLSTAR=PRE,POST_ALLSTAR=POST,MARGIN_LEQ3=`=3`,
          MARGIN_GEQ10=`=10`) %>%
   arrange(TEAM_NAME)
-  
+
 # create win and loss columns:
 x <- names(bbrefStandings[[1]])[-1]
 for (i in 1:length(x)) {
@@ -45,4 +45,4 @@ bbrefStandings[[2]] <- y
 # add names to tables
 names(bbrefStandings) <- c("ExpandedStandings","TeamvsTeam","Expanded_WL")
 
-rm(list=setdiff(ls(), "bbrefStandings"))
+rm(x,y,z,index)
