@@ -17,7 +17,7 @@ myTeam <- unique(dfBox$team_name)[20]
 # select boxscores for desired team: ----
 teamBox <- dfBox %>% 
   filter(team_abbreviation == myAbb) %>% 
-  select(athlete_display_name,team_name,min,game_id,game_date,active) %>% 
+  select(athlete_display_name,team_name,min,game_id,game_date) %>% 
   rename(player=athlete_display_name)
 
 # create an order for players, based on minutes per game: ----
