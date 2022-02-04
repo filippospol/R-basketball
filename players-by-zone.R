@@ -59,6 +59,10 @@ names(tbByZone)[25:27] <- paste(misc[7],"_",names(tbByZone)[25:27],sep="")
 names(tbByZone)[28:30] <- paste(misc[8],"_",names(tbByZone)[28:30],sep="")
 
 # final table:
-playersByZone <- merge(tbTotals,tbByZone,by=c("PLAYER_ID"))
+playersByZone <- merge(tbTotals,tbByZone,by=c("PLAYER_ID")) %>%
+  tibble() %>% 
+  select(c(1,8,10,11,2:7,13:34)) %>% 
+  mutate_at(-c(1:3),as.numeric) %>% 
+  mutate(MIN=round(MIN,1))
 
-rm(json_resp,raw,url,urlArray,headers,apiLoad,tbTotals,tbByZone,i,misc,x)
+rm(json_resp,raw,url,urlArray,headers,apiLoad,tbTotals,tbByZone,misc)
