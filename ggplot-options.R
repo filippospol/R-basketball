@@ -4,6 +4,7 @@
 # https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html
 # https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
 # https://patchwork.data-imaginist.com/
+# https://cran.r-project.org/web/packages/ggfittext/ggfittext.pdf
 
 font_add_google(name = "Roboto", family = "Roboto")
 showtext_auto()
