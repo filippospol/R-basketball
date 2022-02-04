@@ -3,6 +3,8 @@ apiLoad <- function(x) {
   # this function scrapes data from stats.NBA.com
   # its only input is the url, found at:
   # right click web page > Inspect > Network
+  # Inspired by:
+  # https://www.owenlhjphillips.com/new-blog/2020/6/11/how-to-download-nba-shot-data-with-r
   
   suppressMessages(library(jsonlite))
   suppressMessages(library(httr))
