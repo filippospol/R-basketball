@@ -49,4 +49,4 @@ numberOfLineups$TEAM_ABBREVIATION <- wikiTeams$TEAM_ABBREVIATION
 numberOfLineups <- merge(numberOfLineups,wikiTeams,by="TEAM_ABBREVIATION") %>% 
   select(TEAM_NAME,TEAM_ABBREVIATION,N_OF_LINEUPS)
 
-rm(list=setdiff(ls(), c("bbrefLineupList","numberOfLineups")))
+rm(wikiTeams,i)
