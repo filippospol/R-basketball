@@ -61,7 +61,7 @@ names(tbByZone)[28:30] <- paste(misc[8],"_",names(tbByZone)[28:30],sep="")
 # final table:
 playersByZone <- merge(tbTotals,tbByZone,by=c("PLAYER_ID")) %>%
   tibble() %>% 
-  select(c(1,8,10,11,2:7,13:34)) %>% 
+  select(c(1,8,10,11,2:7,13:36)) %>% 
   mutate_at(-c(1:3),as.numeric) %>% 
   mutate(MIN=round(MIN,1))
 
