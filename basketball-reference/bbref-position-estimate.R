@@ -1,9 +1,3 @@
-# load libraries ----
-library(dplyr)
-library(janitor)
-library(rvest)
-
-# load team abbreviations:
 x <- "https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations" %>% 
   read_html() %>% 
   html_elements("table") %>% 
@@ -54,7 +48,16 @@ for (i in 1:length(x)) {
 # gather all teams data into one table: ----
 bbrefEstPosition <- do.call("rbind",out) ; rm(out,i,x,y)
 
-# there are duplicate players, since they were traded during the season. Don't remove them!
+# group per player
+bbrefEstPosition <- bbrefEstPosition %>% 
+  group_by(PLAYER_NAME) %>% 
+  mutate(MIN=as.numeric(MP)) %>% 
+  summarise(MIN=sum(MIN),PG_PERCENT=round(mean(PG_PERCENT),2),
+            SG_PERCENT=round(mean(SG_PERCENT),2),
+            SF_PERCENT=round(mean(SF_PERCENT),2),
+            PF_PERCENT=round(mean(PF_PERCENT),2),
+            C_PERCENT=round(mean(C_PERCENT),2))
+
 # create estimated position column: ----
 bbrefEstPosition <- bbrefEstPosition %>% 
   mutate(POSITION_EST = case_when(
@@ -69,7 +72,7 @@ bbrefEstPosition <- bbrefEstPosition %>%
     TRUE ~ "BIG"
   )
   ) %>% 
-  mutate(MIN=as.numeric(MP)) %>%select(1,2,11,10)
+  select(1,2,8)
 # manually edit some players' positions: ----
 bbrefEstPosition$POSITION_EST[
   which(bbrefEstPosition$PLAYER_NAME %in% c(
@@ -91,7 +94,7 @@ bbrefEstPosition$POSITION_EST[
 ] <- "WING"
 bbrefEstPosition$POSITION_EST[
   which(bbrefEstPosition$PLAYER_NAME %in% c(
-   "JaMychal Green","Xavier Tillman Sr.","Thanasis Antetokounmpo" 
+    "JaMychal Green","Xavier Tillman Sr.","Thanasis Antetokounmpo" 
   ))
 ] <- "BIG"
 bbrefEstPosition$POSITION_EST[
@@ -100,3 +103,4 @@ bbrefEstPosition$POSITION_EST[
 bbrefEstPosition$POSITION_EST[
   which(bbrefEstPosition$PLAYER_NAME %in% c("Patrick Beverley"))
 ] <- "COMBO GUARD"
+bbrefEstPosition <- bbrefEstPosition %>% arrange(PLAYER_NAME)
