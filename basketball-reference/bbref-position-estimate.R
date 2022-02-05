@@ -68,7 +68,8 @@ bbrefEstPosition <- bbrefEstPosition %>%
       (PF_PERCENT<C_PERCENT | SF_PERCENT>C_PERCENT) ~ "FORWARD",
     TRUE ~ "BIG"
   )
-) %>%  select(1,2,4,10)
+  ) %>% 
+  mutate(MIN=as.numeric(MP)) %>%select(1,2,11,10)
 # manually edit some players' positions: ----
 bbrefEstPosition$POSITION_EST[
   which(bbrefEstPosition$PLAYER_NAME %in% c(
