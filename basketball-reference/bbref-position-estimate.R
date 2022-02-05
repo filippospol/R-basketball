@@ -1,3 +1,7 @@
+# load libraries: ----
+library(tidyverse)
+library(rvest)
+
 x <- "https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations" %>% 
   read_html() %>% 
   html_elements("table") %>% 
