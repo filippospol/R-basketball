@@ -39,7 +39,7 @@ p <- teamBox %>%
   scale_fill_gradient(low="#e0efef",high="#006666", guide="colorbar") +
   geom_fit_text(aes(label = min),contrast = TRUE,min.size = 8,
                 fontface="bold") +
-  theme_light() +
+  theme_minimal() +
   labs(title=paste(myTeam,": Minutes distribution",sep=""),
        subtitle=paste("As of ",Sys.Date(),". Data by {hoopR} | @filippos_pol",sep=""),
        y="", x="GAME",fill="Minutes") +
@@ -53,4 +53,4 @@ p <- teamBox %>%
         legend.position='none')
 
 # (optional) save chart as .png file: ----
-ggsave("heatmap.png",p,width=11,height=4.5)
+ggsave("heatmap.png",p,width=11,height=4.5,bg="#ffffff")
