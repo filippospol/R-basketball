@@ -35,7 +35,7 @@ p <- df %>%
        caption='Plot by: @filippos_pol',
        x='# of Distinct Starting Lineups / Games Played',
        y='Current W% - Projected W%') +
-  theme_light() +
+  theme_minimal() +
   theme(text=element_text(family = "Roboto"),
         plot.title = element_text(hjust=0, size=32,face="bold"),
         plot.subtitle = element_text(hjust=0, size=25, face="italic"),
@@ -44,4 +44,4 @@ p <- df %>%
         axis.text = element_text(size=20))
 
 # (optional) save chart as .png file: ----
-ggsave("continuity.png",p,width=6.5,height=4)
+ggsave("continuity.png",p,width=6.5,height=4,bg="#ffffff")
