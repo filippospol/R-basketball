@@ -75,7 +75,7 @@ df %>%
        subtitle=paste("Minimum 100 minutes played. Source: stats.NBA.com.",
                       format(Sys.Date(),format="%B %d %Y")),
        caption="Chart by @filippos_pol") +
-  theme_light() +
+  theme_minimal() +
   theme(text=element_text(family = "Roboto"),
         plot.title = element_text(hjust=0, size=32,face="bold"),
         plot.subtitle = element_text(hjust=0, size=25, face="italic"),
@@ -83,3 +83,5 @@ df %>%
         axis.title = element_text(size=20),
         axis.text = element_text(size=20),
         legend.position = "none")
+
+# ggsave(bg="#ffffff")
