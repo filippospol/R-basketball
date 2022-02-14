@@ -6,6 +6,7 @@
 # https://patchwork.data-imaginist.com/
 # https://cran.r-project.org/web/packages/ggfittext/ggfittext.pdf
 # https://r-charts.com/distribution/ggbeeswarm/
+# https://r-charts.com/ranking/ggbump/
 
 font_add_google(name = "Roboto", family = "Roboto")
 showtext_auto()
