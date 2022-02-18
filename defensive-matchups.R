@@ -72,7 +72,7 @@ if (myPlayer %in% playersList){
          subtitle=paste("Source: stats.NBA.com.",
                         format(Sys.Date(),format="%B %d %Y")),
          caption=paste0(
-           "Chart by @filippos_pol<br>Red: scored better than average | Green: worse than average (when guarded by ",myPlayer,")"
+           "Chart by @filippos_pol<br>Red: player on offense scored better than average | Green: worse than average (when guarded by ",myPlayer,")"
          )) +
     theme_minimal() +
     theme(text=element_text(family = "Roboto"),
