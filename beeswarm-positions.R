@@ -72,8 +72,9 @@ p <- df %>%
   geom_jitter(shape=21, alpha=0.6, size=3) +
   scale_fill_brewer(palette = "Set2") +
   labs(x="",y="PITP per game", title="Points in the paint leaders",
-       subtitle=paste("Minimum 100 minutes played. Source: stats.NBA.com.",
-                      format(Sys.Date(),format="%B %d, %Y")),
+       subtitle=paste(format(Sys.Date(),format="%B %d, %Y"),
+                      "| Minimum 100 minutes played | Source: stats.NBA.com, basketball-reference.com."
+                      ),
        caption="Chart by @filippos_pol") +
   theme_minimal() +
   theme(text=element_text(family = "Roboto"),
@@ -83,5 +84,5 @@ p <- df %>%
         axis.title = element_text(size=20),
         axis.text = element_text(size=20),
         legend.position = "none")
-ggsave("jitter.png",p,bg="#ffffff",width=6,height=4)
 
+ggsave("jitter.png",p,bg="#ffffff",width=6,height=4)
