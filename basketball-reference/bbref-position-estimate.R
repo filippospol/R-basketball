@@ -1,5 +1,6 @@
 # load libraries: ----
 library(tidyverse)
+library(janitor)
 library(rvest)
 
 x <- "https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations" %>% 
@@ -21,22 +22,42 @@ out <- list()
 
 # get position estimates:
 for (i in 1:length(x)) {
-  df <- suppressWarnings(
-    paste("https://www.basketball-reference.com/teams/",x[i],"/2022.html",
-          sep="") %>% 
-      read_html() %>% 
-      html_nodes(xpath = '//comment()') %>%    
-      html_text() %>%    
-      paste(collapse = '') %>%    
-      read_html() %>% 
-      html_table() %>% 
-      `[[`(9) %>% 
-      row_to_names(1) %>% 
-      clean_names() %>%
-      rename(player_name=x) %>% 
-      rename_all(.funs = toupper) %>% 
-      select(c(2,4:10))
-  )
+  if (i==23) {
+    df <- suppressWarnings(
+      paste("https://www.basketball-reference.com/teams/",x[i],"/2022.html",
+            sep="") %>% 
+        read_html() %>% 
+        html_nodes(xpath = '//comment()') %>%    
+        html_text() %>%    
+        paste(collapse = '') %>%    
+        read_html() %>% 
+        html_table() %>% 
+        `[[`(8) %>% 
+        row_to_names(1) %>% 
+        clean_names() %>%
+        rename(player_name=x) %>% 
+        rename_all(.funs = toupper) %>% 
+        select(c(2,4:10))
+    )
+  }
+  else {
+    df <- suppressWarnings(
+      paste("https://www.basketball-reference.com/teams/",x[i],"/2022.html",
+            sep="") %>% 
+        read_html() %>% 
+        html_nodes(xpath = '//comment()') %>%    
+        html_text() %>%    
+        paste(collapse = '') %>%    
+        read_html() %>% 
+        html_table() %>% 
+        `[[`(9) %>% 
+        row_to_names(1) %>% 
+        clean_names() %>%
+        rename(player_name=x) %>% 
+        rename_all(.funs = toupper) %>% 
+        select(c(2,4:10))
+    )
+  }
   
   # clean data:
   df[,4:8] <- data.frame(sapply(df[,4:8], 
