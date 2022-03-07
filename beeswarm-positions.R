@@ -66,14 +66,14 @@ df <- inner_join(playersMerged,bbrefEstPosition,by="PLAYER_NAME") %>%
 rm(bbrefEstPosition,playersByZone,playersFilter,playersMerged,playersMisc)
 
 # create beeswarm plot: ---- 
-df %>% 
+p <- df %>% 
   ggplot(aes(x=POSITION_EST,y=PTS_PAINT/GP,fill=POSITION_EST)) +
   # geom_quasirandom()
-  geom_beeswarm(shape=21, alpha=0.6, size=3) +
+  geom_jitter(shape=21, alpha=0.6, size=3) +
   scale_fill_brewer(palette = "Set2") +
   labs(x="",y="PITP per game", title="Points in the paint leaders",
        subtitle=paste("Minimum 100 minutes played. Source: stats.NBA.com.",
-                      format(Sys.Date(),format="%B %d %Y")),
+                      format(Sys.Date(),format="%B %d, %Y")),
        caption="Chart by @filippos_pol") +
   theme_minimal() +
   theme(text=element_text(family = "Roboto"),
@@ -83,5 +83,5 @@ df %>%
         axis.title = element_text(size=20),
         axis.text = element_text(size=20),
         legend.position = "none")
+ggsave("jitter.png",p,bg="#ffffff",width=6,height=4)
 
-# ggsave(bg="#ffffff")
