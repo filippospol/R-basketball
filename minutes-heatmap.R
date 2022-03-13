@@ -11,8 +11,8 @@ dfBox <- load_nba_player_box(seasons=2022)
 
 # select team, by abbreviation:
 unique(dfBox$team_abbreviation)
-myAbb <- unique(dfBox$team_abbreviation)[20]
-myTeam <- unique(dfBox$team_name)[20]
+myAbb <- unique(dfBox$team_abbreviation)[23]
+myTeam <- unique(dfBox$team_name)[23]
 
 # select boxscores for desired team: ----
 teamBox <- dfBox %>% 
@@ -28,17 +28,25 @@ playerOrder <- teamBox %>%
   arrange(-minPerGame)
 teamBox <- teamBox %>% 
   mutate(player=factor(player, levels = playerOrder$player))
+teamBox$game_number <- teamBox %>% group_indices(game_id)
 
+# filter last N games : ----
+teamBoxFilter <- teamBox %>%
+  filter(game_number %in% (unique(teamBox$game_number) %>% tail(10)) & 
+         min !=0) %>% 
+  mutate(player=factor(player))
+
+# clear environment: ----
+rm(dfBox,playerOrder)
+  
 # create heatmap chart: ----
-p <- teamBox %>%
-  ggplot(aes(x=as.factor(game_id), fill=as.integer(min), 
+p <- teamBoxFilter %>%
+  ggplot(aes(x=as.factor(game_number), fill=as.integer(min), 
              y=player)) +
-  geom_tile()  +
-  scale_y_discrete(limits = rev(levels(teamBox$player))) +
-  scale_x_discrete(labels=1:length(unique(teamBox$game_id))) +
+  geom_tile() +
+  scale_y_discrete(limits = rev(levels(teamBoxFilter$player))) +
   scale_fill_gradient(low="#e0efef",high="#006666", guide="colorbar") +
-  geom_fit_text(aes(label = min),contrast = TRUE,min.size = 8,
-                fontface="bold") +
+  geom_text(aes(label = min),fontface="bold") +
   theme_minimal() +
   labs(title=paste(myTeam,": Minutes distribution",sep=""),
        subtitle=paste("As of ",Sys.Date(),". Data by {hoopR} | @filippos_pol",sep=""),
