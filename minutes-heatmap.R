@@ -46,7 +46,7 @@ p <- teamBoxFilter %>%
   geom_tile() +
   scale_y_discrete(limits = rev(levels(teamBoxFilter$player))) +
   scale_fill_gradient(low="#e0efef",high="#006666", guide="colorbar") +
-  geom_text(aes(label = min),fontface="bold") +
+  geom_text(aes(label = min),fontface="bold",size=6) +
   theme_minimal() +
   labs(title=paste(myTeam,": Minutes distribution",sep=""),
        subtitle=paste("As of ",Sys.Date(),". Data by {hoopR} | @filippos_pol",sep=""),
@@ -61,4 +61,4 @@ p <- teamBoxFilter %>%
         legend.position='none')
 
 # (optional) save chart as .png file: ----
-ggsave("heatmap.png",p,width=11,height=4.5,bg="#ffffff")
+ggsave("heatmap.png",p,width=5.5,height=4.5,bg="#ffffff")
