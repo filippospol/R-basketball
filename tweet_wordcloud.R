@@ -1,3 +1,7 @@
+# Source of the following script is: 
+# https://mikeyharper.uk/creating-twitter-wordclouds/
+# Just a few minor modifications made
+
 # load libraries: --------------------------------------------------------
 library(rtweet)
 library(tm)
