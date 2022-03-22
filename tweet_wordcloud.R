@@ -18,7 +18,7 @@ tweet_wordcloud <- function(w,size) {
   
   # get raw data:
   raw_tweets <- search_tweets2(w, n = size, 
-                               include_rts = FALSE, lang = "en")
+                               include_rts = TRUE, lang = "en")
   # retryonratelimit = TRUE
   
   # select only the text of each tweet:
