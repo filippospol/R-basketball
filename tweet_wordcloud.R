@@ -43,12 +43,12 @@ tweet_wordcloud <- function(w,size) {
   
   tweetsCorpus <- sort(rowSums(tweetsCorpus), decreasing=TRUE)
   tweetsCorpus <- data.frame(Word = names(tweetsCorpus),
-                             freq=tweetsCorpus, row.names = NULL) 
+                             freq=tweetsCorpus, row.names = NULL) [-1,]
   # tweetsCorpus <- tweetsCorpus %>% filter(Word != "nba")
   
   p <- wordcloud2(data = tweetsCorpus, minRotation = 0, maxRotation = 0,
                   ellipticity = 0.6, backgroundColor = "#ffffff",
-                  size = 2, fontFamily="Calibri")
+                  size = 2, fontFamily="Calibri", color = "random-dark")
   
   # print results; 1 is the table, 2 is the plot:
   return(list(head(tweetsCorpus,50),p))
