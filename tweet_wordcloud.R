@@ -58,3 +58,4 @@ tweet_wordcloud <- function(w,size) {
   # print results; 1 is the table, 2 is the plot:
   return(list(head(tweetsCorpus,50),p))
 }
+# cloud <- tweet_wordcloud(w="Minnesota Timberwolves", size=10000)
