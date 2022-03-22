@@ -3,6 +3,7 @@
 # Just a few minor modifications made
 
 # load libraries: --------------------------------------------------------
+library(dplyr)
 library(rtweet)
 library(tm)
 library(stringr)
