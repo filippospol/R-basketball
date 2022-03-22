@@ -47,7 +47,7 @@ tweet_wordcloud <- function(w,size) {
   tweetsCorpus <- tweetsCorpus %>% filter(Word != "nba")
   
   p <- wordcloud2(data = tweetsCorpus, minRotation = 0, maxRotation = 0,
-                  ellipticity = 0.6, backgroundColor = "#ffffff",
+                  backgroundColor = "#ffffff", # ellipticity = 0.6,
                   size = 2, fontFamily="Calibri", color = "random-dark")
   
   # print results; 1 is the table, 2 is the plot:
