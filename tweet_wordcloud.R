@@ -49,7 +49,7 @@ tweet_wordcloud <- function(w,size) {
   tweetsCorpus <- sort(rowSums(tweetsCorpus), decreasing=TRUE)
   tweetsCorpus <- data.frame(Word = names(tweetsCorpus),
                              freq=tweetsCorpus, row.names = NULL)
-  tweetsCorpus <- tweetsCorpus %>% filter(Word != "nba")
+  tweetsCorpus <- tweetsCorpus %>% filter(!Word %in% c("nba","chili","spicy"))
   
   p <- wordcloud2(data = tweetsCorpus, minRotation = 0, maxRotation = 0,
                   backgroundColor = "#ffffff", # ellipticity = 0.6,
