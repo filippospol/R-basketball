@@ -57,6 +57,6 @@ tweet_wordcloud <- function(w,size) {
   
   # print results; 1 is the table, 2 is the plot:
   return(list(head(tweetsCorpus,50),p))
-  beepr::beep()
+  return(beepr::beep(2))
 }
 
