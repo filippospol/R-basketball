@@ -233,7 +233,7 @@ t2 <- input %>%
              subtitle=html("<div style='color:#8e8e8e;'>Top-10 players based on all-in-one metrics rank</div><br/>")) %>% 
   tab_style(style = cell_text(weight = "bold"),
             locations = cells_column_labels(everything())) %>% 
-  tab_source_note(source_note = html(paste0("Sources: Basketball Reference, BBall Index, ESPN, FiveThirtyEight, inpredictable<br/>",
+  tab_source_note(source_note = html(paste0("Sources: Basketball Reference, BBall Index, ESPN, FiveThirtyEight, inpredictable, NBA Shot Charts<br/>",
                                             format(Sys.time(),"%B %d,%Y")))) %>% 
   tab_options(data_row.padding = px(1),
               row.striping.background_color = "#eeeeee",
