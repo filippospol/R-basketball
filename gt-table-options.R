@@ -16,7 +16,12 @@ gt() %>%
   fmt_percent(columns = ,
               decimals = 1) %>% 
   tab_footnote(footnote = "",
-               locations = cells_column_labels()) %>% 
+               locations = cells_column_labels()) %>%
+  data_color(
+    columns = c(FGA:PF),
+    colors = scales::col_numeric(
+      palette = paletteer::paletteer_d(palette="ggsci::yellow_material") %>%
+        as.character(),domain = NULL)) %>%
   tab_source_note(source_note = "") %>% 
   tab_options(data_row.padding = px(1),
               row.striping.background_color = "#eeeeee",
