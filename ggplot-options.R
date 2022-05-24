@@ -15,7 +15,7 @@ p +
 theme_minimal() +
 theme(text=element_text(family = "Roboto"),
              plot.title = element_text(hjust=0, size=28,face="bold"),
-             plot.subtitle = element_text(hjust=0, size=20, face="italic"),
+             plot.subtitle = element_text(hjust=0, size=20, face="italic",color="#999999"),
              plot.caption = element_text(hjust=0, size=18),
              axis.title = element_text(size=18),
              axis.text = element_text(size=15))
