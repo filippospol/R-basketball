@@ -1,13 +1,12 @@
 # load libraries ----
-library(dplyr)
-library(rvest)
+pacman::p_load(dplyr,rvest)
 
 # get bbref preseason odds and w-l o/u:
 bbrefOdds <- "https://www.basketball-reference.com/leagues/NBA_2022_preseason_odds.html" %>% 
   read_html() %>% 
   html_elements("table") %>% 
   html_table() %>% 
-  `[[`(1) %>% 
+  pluck(1) %>% 
   select(c(1,4,5)) %>% 
   mutate(Result = str_sub(Result, start=1, end=5)) %>%
   separate(Result,into=c("W","L"),sep="-",remove=T) %>% 
