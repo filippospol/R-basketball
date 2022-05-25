@@ -1,14 +1,12 @@
 # load libraries ----
-library(dplyr)
-library(janitor)
-library(rvest)
+pacman::p_load(dplyr,janitor,rvest)
 
 # load team names & abbreviations:
 wikiTeams <- "https://en.wikipedia.org/wiki/Wikipedia:WikiProject_National_Basketball_Association/National_Basketball_Association_team_abbreviations" %>% 
   read_html() %>% 
   html_elements("table") %>% 
   html_table() %>% 
-  `[[`(1) %>% 
+  pluck(1) %>% 
   mutate(X1 = ifelse(X1=='Abbreviation/Acronym', 'TEAM_ABBREVIATION',X1),
          X2 = ifelse(X2=='Franchise', 'TEAM_NAME',X2)) %>% 
   row_to_names(row_number = 1)
@@ -35,7 +33,7 @@ for (i in 1:dim(numberOfLineups)[1]) {
     read_html() %>% 
     html_elements("table") %>% 
     html_table() %>% 
-    `[[`(2) %>% 
+    pluck(2) %>% 
     select(`Starting Lineup`, G, W, L, `W/L%`) %>% 
     rename(LINEUP=`Starting Lineup`,GP=G, W_PCT=`W/L%`)
   
