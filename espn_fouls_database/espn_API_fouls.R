@@ -1,6 +1,4 @@
-# https://www.reddit.com/r/nba/comments/rjv6zx/dataset_for_technical_fouls_ejections_and/
-
-# required packages: pacman,tidyverse,httr,jsonlite
+# load packages/libraries:
 pacman::p_load(tidyverse,httr,jsonlite,rvest)
 
 # function to return player names and ESPN id's for a given season:
@@ -24,7 +22,7 @@ espn_nba_athletes <- function(season) {
 
 # function to return a given player's career misc total stats:
 espn_nba_misc_totals <- function(athleteID,s_type) {
-  if (!s_type %in% 2:3) stop("Error using the function: s_type is either 2 or 3.")
+  if (!s_type %in% 2:3) stop("Error using the function: s_type is either 2 (regular season) or 3 (postseason).")
   
   # get link from API
   if (s_type==2) {
@@ -56,7 +54,7 @@ espn_nba_misc_totals <- function(athleteID,s_type) {
   }
   else return(tibble())
   
-} ; Sys.sleep(30)
+}
 
 # -----------------------------------------------------------------------------------------------------------
 
@@ -76,8 +74,7 @@ for (i in 1:length(s)) {
 players <- bind_rows(out) %>% distinct() %>% arrange(displayName)
 rm(list=setdiff(ls(), c("players","espn_nba_athletes","espn_nba_misc_totals")))
 
-# list with misc playoff stats for every recorded player:
-# change playoff appearances if regular season stats are scraped:
+# list with misc total stats for every recorded player:
 out1 <- vector("list",length=nrow(players))
 out2 <- vector("list",length=nrow(players))
 for (i in 1:nrow(players)) {
@@ -104,14 +101,14 @@ for (i in 1:nrow(players)) {
     }
   }
 }
-beepr::beep(2)
+# beepr::beep(2)
 
-# TODO
+# gather all data in one tibble:
 out <- bind_rows(
   bind_rows(out1) %>% distinct(),
   bind_rows(out2) %>% distinct()
 )
-# gather all data in one tibble:
+
 db <- Filter(length, out) %>% 
   bind_rows() %>% 
   right_join(players, by="id") %>% 
