@@ -53,5 +53,5 @@ teamBoxFilter %>%
   scale_fill_gradient(low="#e0efef",high="#006666", guide="colorbar") +
   geom_text(aes(label = min),fontface="bold") +
   labs(title=paste(myTeam,": Minutes distribution",sep=""),
-       subtitle=paste("Last ",n_games," games | Source: stats.NBA.com | Plot by@filippos_pol",sep=""),
+       subtitle=paste("Last ",n_games," games | Source: ESPN | Plot by@filippos_pol",sep=""),
        y="", x="Game #",fill="Minutes")
