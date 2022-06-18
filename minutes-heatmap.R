@@ -5,6 +5,16 @@ pacman::p_load(tidyverse,hoopR)
 dfBox <- load_nba_player_box(seasons=2022) %>% 
   filter(season_type==2) # 3=playoffs
 
+# alternative way: ----
+out <- list()
+s <- 401442530:401442535
+for (i in 1:length(s)) {
+  out[[i]] <- espn_nba_player_box(game_id = s[i]) %>% 
+    # select(player=athlete_display_name,team_name,team_abbreviation,min) %>% 
+    mutate(game_id=s[i])
+}
+dfBox <- bind_rows(out) ; rm(i,s,out)
+
 # select team, by abbreviation:
 unique(dfBox$team_abbreviation)
 myAbb <- unique(dfBox$team_abbreviation)[23]
