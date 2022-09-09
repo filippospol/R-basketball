@@ -19,12 +19,8 @@ dbBackPicks %>%
   gt() %>% 
   cols_label(PLAYER="Player",TEAM="Team",PTS_75="Pts/75",BOX_CREATION="BoxC",
              OFF_LOAD="OLoad") %>%
-  data_color(columns = c(4:8),
-             colors = scales::col_numeric(
-               palette = paletteer::paletteer_d(
-                 palette = "ggsci::light_green_material") %>%
-                 as.character(),
-               domain = NULL) ) %>% 
+  gt_color_rows(columns=c(4:8), domain=NULL,
+                palette = "ggsci::light_green_material") %>%  
   tab_header(title=md(paste("**Euroleague Backpicks Metrics:",s,"Regular Season**")),
              subtitle=html("<div style='color:#8e8e8e;'>Table by: Filippos Polyzos | Source: hackastat.eu</div><br/>")) %>% 
   tab_options(data_row.padding = px(1),
