@@ -11,14 +11,11 @@ gt() %>%
              subtitle=html("<div style='color:#8e8e8e;'>Subtitle</div><br/>")) %>% 
   tab_style(style = cell_text(weight = "bold"),
             locations = cells_column_labels(everything()))  %>%  
-  gt_img_rows(columns =, 
-              height =) %>%
-  fmt_percent(columns = ,
-              decimals = 1) %>% 
-  tab_footnote(footnote = "",
-               locations = cells_column_labels()) %>%
+  gt_img_rows(columns =, height =) %>%
+  fmt_percent(columns = , decimals = 1) %>% 
+  tab_footnote(footnote = "", locations = cells_column_labels()) %>%
   data_color(
-    columns = c(FGA:PF),
+    columns = c(),
     colors = scales::col_numeric(
       palette = paletteer::paletteer_d(palette="ggsci::yellow_material") %>%
         as.character(),domain = NULL)) %>%
