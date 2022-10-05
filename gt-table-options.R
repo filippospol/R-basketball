@@ -12,13 +12,10 @@ gt() %>%
   tab_style(style = cell_text(weight = "bold"),
             locations = cells_column_labels(everything()))  %>%  
   gt_img_rows(columns =, height =) %>%
+  gt_highlight_rows(rows = 2, font_weight = "normal") %>%
   fmt_percent(columns = , decimals = 1) %>% 
   tab_footnote(footnote = "", locations = cells_column_labels()) %>%
-  data_color(
-    columns = c(),
-    colors = scales::col_numeric(
-      palette = paletteer::paletteer_d(palette="ggsci::yellow_material") %>%
-        as.character(),domain = NULL)) %>%
+  gt_color_rows(c(), palette = "ggsci::blue_material") %>%
   tab_source_note(source_note = "") %>% 
   tab_options(data_row.padding = px(1),
               row.striping.background_color = "#eeeeee",
