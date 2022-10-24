@@ -32,5 +32,5 @@ gt() %>%
               table_body.border.bottom.width = px(3),
               table_body.border.bottom.color = "#4c4c4c",
               table.border.bottom.color = "transparent") %>% 
-  opt_table_font(font = google_font("Roboto")) %>% 
+  opt_table_font(font = google_font("Source Sans Pro")) %>% 
   opt_row_striping()
