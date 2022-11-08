@@ -16,7 +16,7 @@ df <- df %>%
          CONTINUITY = round(N_OF_LINEUPS/(W+L),3))
 
 # add team logos:
-df$TEAM_ID <- hoopR::nba_leaguedashteamstats(season="2021-22") %>%
+df$TEAM_ID <- hoopR::nba_leaguedashteamstats(season="2022-23") %>%
   pluck(1) %>% 
   select(TEAM_ID) %>% 
   pull()
