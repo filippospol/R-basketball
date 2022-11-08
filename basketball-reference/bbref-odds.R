@@ -1,7 +1,7 @@
 # load libraries ----
 pacman::p_load(dplyr,rvest)
 
-bbrefOdds = "https://www.basketball-reference.com/leagues/NBA_2022_preseason_odds.html" %>% 
+bbrefOdds = "https://www.basketball-reference.com/leagues/NBA_2023_preseason_odds.html" %>% 
   read_html() %>% 
   html_elements("table") %>% 
   html_table() %>% 
