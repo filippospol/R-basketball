@@ -25,7 +25,7 @@ for (i in 1:dim(numberOfLineups)[1]) {
   
   # assign url
   url <- paste("https://www.basketball-reference.com/teams/",
-               numberOfLineups$TEAM_ABBREVIATION[i],"/2022_start.html",
+               numberOfLineups$TEAM_ABBREVIATION[i],"/2023_start.html",
                sep="")
   
   # get table of unique lineups and record
