@@ -6,14 +6,14 @@ dfBox <- load_nba_player_box(seasons=2022) %>%
   filter(season_type==2) # 3=playoffs
 
 # alternative way: ----
-out <- list()
-s <- 401442530:401442535
-for (i in 1:length(s)) {
-  out[[i]] <- espn_nba_player_box(game_id = s[i]) %>% 
-    # select(player=athlete_display_name,team_name,team_abbreviation,min) %>% 
-    mutate(game_id=s[i])
-}
-dfBox <- bind_rows(out) ; rm(i,s,out)
+# out <- list()
+# s <- 401442530:401442535
+# for (i in 1:length(s)) {
+#   out[[i]] <- espn_nba_player_box(game_id = s[i]) %>% 
+#     # select(player=athlete_display_name,team_name,team_abbreviation,min) %>% 
+#     mutate(game_id=s[i])
+# }
+# dfBox <- bind_rows(out) ; rm(i,s,out)
 
 # select team, by abbreviation:
 unique(dfBox$team_abbreviation)
@@ -45,6 +45,7 @@ teamBoxFilter <- teamBox %>%
   mutate(player=factor(player))
 
 # create heatmap chart: ----
+season=unique(dfBox$season)
 teamBoxFilter %>%
   ggplot(aes(x=as.factor(game_number), fill=as.integer(min), 
              y=player)) +
@@ -53,5 +54,6 @@ teamBoxFilter %>%
   scale_fill_gradient(low="#e0efef",high="#006666", guide="colorbar") +
   geom_text(aes(label = min),fontface="bold") +
   labs(title=paste(myTeam,": Minutes distribution",sep=""),
-       subtitle=paste("Last ",n_games," games | Source: ESPN | Plot by @filippos_pol",sep=""),
+       subtitle=paste(paste0(season-1,"-",str_sub(season,-2, -1)),
+                      " season | Source: ESPN | Plot by @filippos_pol",sep=""),
        y="", x="Game #",fill="Minutes")
