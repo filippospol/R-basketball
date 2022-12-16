@@ -1,4 +1,4 @@
-pacman::p_load(gt,gtExtras,ggplot2,sysfonts,showtext)
+pacman::p_load(gt,gtExtras)
 
 ######################################################################################################
 GT TABLE
@@ -41,13 +41,17 @@ gt() %>%
 ######################################################################################################
 GGPLOT
 ######################################################################################################
+pacman::p_load(sysfonts,showtext,ggtext)
 
-font_add_google("Source Sans Pro")
+# download font awesome locally first! https://fontawesome.com/download
+font_add_google("Rubik")
+sysfonts::font_add("FA","C:/Users/phili/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf")
 showtext_auto()
+pc = "<span style='font-family:FA;'>&#xf099;</span> @filippos_pol | <span style='font-family:fb;'>&#xf09b;</span> filippospol"
 
 ggplot() %>%
   theme_minimal() +
-  theme(text=element_text(family="Source Sans Pro"),
-        plot.title=element_text(size=,face="bold"),
-        plot.subtitle=element_text(size=,color="#777777"),
-        plot.caption=element_text(size=,color="#777777"))
+  theme(text=element_text(family="Rubik"),
+        plot.title=element_markdown(face="bold"),
+        plot.subtitle=element_markdown(color="#777777"),
+        plot.caption=element_text(color="#777777"),hjust=0)
