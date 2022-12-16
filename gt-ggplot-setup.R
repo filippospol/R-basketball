@@ -1,9 +1,7 @@
-pacman::p_load(gt,gtExtras)
-
 ######################################################################################################
 GT TABLE
 ######################################################################################################
-
+pacman::p_load(gt,gtExtras)
 
 gt() %>% 
   cols_align(align = "center") %>% 
@@ -35,21 +33,20 @@ gt() %>%
               table.border.bottom.color = "transparent") %>% 
   opt_table_font(font = google_font("Rubik")) %>% 
   opt_row_striping()
-  
-  
-  
+
 ######################################################################################################
 GGPLOT
 ######################################################################################################
 pacman::p_load(sysfonts,showtext,ggtext)
 
-# download font awesome locally first! https://fontawesome.com/download
+# download font awesome locally first: https://fontawesome.com/download
 font_add_google("Rubik")
 sysfonts::font_add("FA","C:/Users/phili/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf")
 showtext_auto()
-pc = "<span style='font-family:FA;'>&#xf099;</span> @filippos_pol | <span style='font-family:fb;'>&#xf09b;</span> filippospol"
+pc = "<span style='font-family:FA;'>&#xf099;</span> @filippos_pol"
 
-ggplot() %>%
+ggplot() +
+  # geom_xxx() +
   theme_minimal() +
   theme(text=element_text(family="Rubik"),
         plot.title=element_markdown(face="bold"),
