@@ -23,7 +23,7 @@ df$TEAM_ID <- hoopR::nba_leaguedashteamstats(season="2022-23") %>%
 df$LOGO <- NA
 for (i in 1:nrow(df)) {
   df$LOGO[i] <- gsub("XXX",df$TEAM_ID[i],
-                          "https://cdn.nba.com/logos/nba/XXX/global/L/logo.svg")
+                          "https://cdn.nba.com/logos/nba/XXX/primary/L/logo.svg")
 }
 rm(list=setdiff(ls(), "df"))
 
