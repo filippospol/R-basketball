@@ -52,7 +52,7 @@ teamBoxFilter %>%
   scale_y_discrete(limits = rev(levels(teamBoxFilter$player))) +
   scale_fill_gradient(low="#fff6e5",high="#ffa500", guide="colorbar") +
   geom_text(aes(label=min)) +
-  labs(title=paste("<img src='",sub("XXX",myAbb,"https://raw.githubusercontent.com/mvpstax/NBA-logos/master/XXX-68x72-6x.png"),
+  labs(title=paste("<img src='",sub("XXX",myAbb,"https://raw.githubusercontent.com/filippospol/R-projects-NBA/main/nba-logos/XXX-68x72-6x.png"),
                    "' width='70'></img>",sep=""),
        subtitle=paste("Minutes distribution,",paste0(season-1,"-",str_sub(season,-2, -1)),
                       "| Source: ESPN",sep=" "),
