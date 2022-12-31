@@ -2,8 +2,8 @@
 pacman::p_load(tidyverse,rvest,ggimage)
 
 # get preseason odds and lineup information: ----
-source("https://raw.githubusercontent.com/filippospol/R-projects-NBA/main/basketball-reference/bbref-starting-lineups.R")
-source("https://raw.githubusercontent.com/filippospol/R-projects-NBA/main/basketball-reference/bbref-odds.R")
+source("https://raw.githubusercontent.com/filippospol/R-basketball/main/basketball-reference/bbref-starting-lineups.R")
+source("https://raw.githubusercontent.com/filippospol/R-basketball/main/basketball-reference/bbref-odds.R")
 
 # merge tables into one: ----
 df <- merge(numberOfLineups,bbrefOdds,by="TEAM_NAME") %>%
