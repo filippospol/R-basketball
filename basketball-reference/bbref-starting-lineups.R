@@ -22,7 +22,7 @@ numberOfLineups[24,1] <- "PHO"
 bbrefLineupList <- list()
 
 for (i in 1:dim(numberOfLineups)[1]) {
-  
+  Sys.sleep(5)
   # assign url
   url <- paste("https://www.basketball-reference.com/teams/",
                numberOfLineups$TEAM_ABBREVIATION[i],"/2023_start.html",
