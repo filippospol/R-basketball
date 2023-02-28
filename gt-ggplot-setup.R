@@ -3,6 +3,8 @@ GT TABLE
 ######################################################################################################
 pacman::p_load(gt,gtExtras)
 
+mycaption = '<meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <i class="fa fa-twitter"></i> filippos_pol'
+
 gt() %>% 
   cols_align(align = "center") %>% 
   cols_label() %>%  # old=new
@@ -15,7 +17,7 @@ gt() %>%
   fmt_percent(columns = , decimals = 1) %>% 
   tab_footnote(footnote = "", locations = cells_column_labels()) %>%
   gt_color_rows(c(), palette = "ggsci::blue_material") %>%
-  tab_source_note(source_note = "") %>% 
+  tab_source_note(source_note = md(paste("Table by: Filippos Polyzos |",mycaption))) %>% 
   tab_options(data_row.padding = px(1),
               row.striping.background_color = "#eeeeee",
               heading.align = "left",
