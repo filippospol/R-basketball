@@ -41,7 +41,7 @@ ctg_positions = function(season) {
     mutate(POSITION = case_when(
       PG_PERCENT>=0.85 ~ "Point",
       (PG_PERCENT>=0.5 | SG_PERCENT>=0.5) & PG_PERCENT+SG_PERCENT>0.8 ~ "Combo",
-      PG_PERCENT+SG_PERCENT+SF_PERCENT>=0.85| SG_PERCENT>=0.85 | SF_PERCENT>=0.85 ~ "Wing",
+      PG_PERCENT+SG_PERCENT+SF_PERCENT>=0.85| SG_PERCENT>=0.85 | SF_PERCENT>=0.85 | (SG_PERCENT+SF_PERCENT>=0.7)~ "Wing",
       C_PERCENT<0.1 & SF_PERCENT>=0.65 | PF_PERCENT>=0.65 | SF_PERCENT+PF_PERCENT>=0.75 ~ "Forward",
       TRUE ~ "Big"
     )) %>% 
