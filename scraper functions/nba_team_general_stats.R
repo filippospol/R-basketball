@@ -13,7 +13,7 @@ nba_team_general_stats = function(season) {
   df1 = left_join(
     nba_leaguedashteamstats(season=season, measure_type="Advanced") %>% 
       pluck(1) %>% 
-      select(TEAM_ID,TEAM_NAME,PACE,OFF_RTG=OFF_RATING,DEF_RTG=DEF_RATING,NET_RTG=NET_RATING),
+      select(TEAM_ID,TEAM_NAME,GP,PACE,OFF_RTG=OFF_RATING,DEF_RTG=DEF_RATING,NET_RTG=NET_RATING),
     nba_leaguedashteamstats(season=season, measure_type="Base") %>% 
       pluck(1) %>% 
       mutate(FG2_PCT=as.numeric((as.numeric(FGM)-as.numeric(FG3M))/(as.numeric(FGA)-as.numeric(FG3A)))) %>% 
@@ -41,6 +41,6 @@ nba_team_general_stats = function(season) {
     arrange(TEAM_ABBREVIATION)
   
   left_join(df1,df2,by="TEAM_ID") %>% 
-    select(TEAM_ID,TEAM_NAME,TEAM_ABBREVIATION,FG_PCT:FT_PCT,AVG_TIME_OF_POSS,PACE:NET_RTG) %>% 
+    select(TEAM_ID,TEAM_NAME,TEAM_ABBREVIATION,GP,FG_PCT:FT_PCT,AVG_TIME_OF_POSS,PACE:NET_RTG) %>% 
     return()
 }
