@@ -1,0 +1,475 @@
+---
+title: "Electricity load forecasting using multiple seasonality time series models"
+author: "Filippos Polyzos"
+output: 
+  html_notebook:
+    theme: united
+    toc: true
+    toc_float: true
+---
+
+## Introduction
+
+This post refers to a group project, which was part of the course **Advanced Business Forecasting** of the [Business Analytics MSc](https://www.bath.ac.uk/courses/postgraduate-2023/taught-postgraduate-courses/msc-business-analytics/#course-changes-disclaimer) program offered by the University of Bath. This course enables students to "explore advanced forecasting methods using ```R``` statistical software". More specifically, the syllabus included sections such as temporal analyses and assessing the limitations and benefits of certain forecasting methods.
+
+The purpose of the project was to produce forecasts of electricity load consumption for 10 European countries. The data can be found at the European association for the cooperation of transmission system operators (TSOs) for electricity  ([ENTSO-E](https://transparency.entsoe.eu/))'s Transparency platform. Groups were assigned with the following tasks:
+
+* Collect, pre-process and clean the hourly data from the platform.    
+* Produce forecasts for the next week using the methods taught throughout the course.
+
+These results were then published to the *Moodle* page of the course and were evaluated using a benchmark forecast. The winning team of this informal competition (composed of Wayne Chiu and myself) received books containing invaluable information and knowledge on topics such as demand forecasting, among others.
+
+In this post, I will document all the steps of the analysis and provide the relevant ```R``` code, for reproducibility purposes.
+
+## The data
+As discussed, the data refers to electricity load consumption for the 10 European countries below:  
+
+* Belgium, Finland, France, Germany, Greece, Italy, Poland, Romania, Sweden, Spain.
+
+#### Collection
+The data is available in hourly and 15-minute format - depending on how each country registers its information. The ENTSO-E Transparency platform offers the capability to extract the data using the website's API, but it was quite restrictive in terms of the number of maximum requests per minute. Fortunately, users of the platform can also access the data by downloading the relevant information in tabular cormat (```.csv```). 
+
+#### Pre-processing and cleaning
+Before starting the analysis, let's setup the environment.
+```{r}
+pacman::p_load(tidyverse,lubridate,glue,janitor,future,forecast,
+               imputeTS,hts,MAPA,thief,tsutils,tsintermittent,
+               gt,gtExtras)
+options(warn=-1)
+setwd("C:/Users/phili/Documents/Advanced Business Forecasting")
+
+# country codes/initials
+country = c("BE","FI","FR","DE","GR","IT","PO","RO","ES","SE")
+
+# chart settings
+sysfonts::font_add_google("Rubik")
+showtext::showtext_auto()
+theme_set(theme_classic())
+theme_update(text = element_text(family="Rubik"),
+             plot.title=element_text(face="bold"),
+             plot.subtitle=element_text(color="#8e8e8e"))
+```
+
+The data is put in a list, each object of which corresponds to a given country. The .csv files include load data over the course of a specific year, at the time the data was collected. A sample of the data can be viewed below:
+
+```{r echo=FALSE, warning=F}
+suppressMessages(read_csv(glue("entso-e/{country[5]}-2021.csv"))) %>% 
+    select(-2) %>% 
+    rename("Date_Time"=1, "Load"=2) %>% 
+    mutate(Load=as.numeric(Load)) %>% 
+    head(10)
+```
+
+Firstly, we split the `Date_Time` column into `Date` and `Time` columns and convert the `Load` column from character to numeric. Following that, we join the two years of data into one table.
+
+One of the obstacles that we faced in this step was the fact that for certain countries, that data was in 15' format. Since we want the data to be in hourly format to get our forecasts, we aggregated every four rows of data to correspond to the total hourly load consumption.
+
+```{r warning=F}
+# Import data
+load_data = list()
+
+for(i in 1:length(country)) {
+  # data raw format:
+  # 2021
+  x1 = suppressMessages(read_csv(glue("entso-e/{country[i]}-2021.csv"))) %>% 
+    select(-2) %>% 
+    rename("Date_Time"=1, "Load"=2) %>% 
+    mutate(Load=as.numeric(Load))
+  
+  # 2022
+  x2 = suppressMessages(read_csv(glue("entso-e/{country[i]}-2022.csv"))) %>% 
+    select(-2) %>% 
+    rename("Date_Time"=1, "Load"=2) %>% 
+    mutate(Load = case_when(
+      Load=="-" ~ "NA",
+      Load=="" ~ "NA",
+      Load=="N/A" ~ "NA",
+      TRUE ~ Load)) %>% 
+    mutate(Load=as.numeric(Load))
+  
+  # bind rows in one table
+  x = bind_rows(x1,x2) ; rm(x1,x2)
+  
+  # split date_time into two columns
+  x = x %>% 
+    mutate(Load = as.numeric(Load),
+           Date = dmy(gsub("\\.","\\-",str_sub(Date_Time,1,10))),
+           Time = paste0(str_sub(Date_Time,12,16),"-",
+                         str_sub(Date_Time,-5,-1))) %>% 
+    select(3,4,2) %>% 
+    mutate(Time=str_sub(Time,1,5))
+  
+  # if we have data per 15':
+  if (i %in% c(1,4,8)) {
+    x <- suppressMessages(
+      x %>% group_by(count = (row_number() -1) %/% 4) %>%
+        mutate(xLoad = round(sum(Load,na.rm=T),0)) %>% 
+        select(1,2,5) %>% 
+        rename(Load=xLoad) %>% 
+        tibble() %>% 
+        select(-1)
+    )
+    x <- x[seq(1,dim(x)[1],4),] 
+  }
+  
+  # final form of data :
+  load_data[[i]] <- tibble(x) ; rm(x)
+  
+}
+
+# add country code as name to each list object
+names(load_data) <- country
+```
+
+The same data sample (Greece, 2021), after the first cleaning step:
+
+```{r echo=FALSE, warning=F}
+load_data %>% 
+  pluck("GR") %>% 
+  head(10)
+```
+
+One of the most interesting concepts that was taught in this lecture, in my opinion, is about **forecast combinations**. This forecasting approach, introduced by [Bates & Granger, 1969](https://doi.org/10.1057/jors.1969.103), showed that combining forecasts tends to improve the accuracy of the final forecast. These different forecasts can either be different methods or the same method, but using different length of training sets. For this exercise, we chose to make forecast combinations using the same model and training sets of 4 weeks and 5 months. In the next sections, I will explain why these different periods are selected. 
+
+The target dates for the forecasts are the days from April 2^nd^ to April 8^th^of 2022. The 4-week subset consists of data from 05/03/2022 to 01/04/2022, whereas the 5-month subset refers to data from 12/11/2021 to 01/04/2022.
+
+Now that we have the two separate training sets for our forecasts, we need to treat missing values and outliers. The former were replaced by the [simple moving average](https://en.wikipedia.org/wiki/Moving_average), while for the latter, [linear interpolation](https://en.wikipedia.org/wiki/Linear_interpolation) was used.
+
+```{r warning=F}
+# segment data in three subsets: 
+# (1) 4 weeks of data, (2) 5 months of data, (3) validation set
+s1 <- "2022-03-05" ; e1 <- "2022-04-01" 
+s2 <- "2021-11-12" ; e2 <- "2022-04-01"
+s3 <- "2022-04-02" ; e3 <- "2022-04-08"
+
+# impute missing values / zeros with simple moving average
+# replace outliers using linear interpolation
+load_4w = lapply(load_data, function(x) {
+  x %>% 
+    filter(Date >= s1 & Date <= e1) %>% 
+    mutate(Load = ts(Load, freq=24),
+           Load = na_ma(Load, k = 1, weighting = "simple"),
+           Load = tsclean(Load)) %>% 
+    select(3)
+})
+load_5m = lapply(load_data, function(x) {
+  x %>% 
+    filter(Date >= s2 & Date <= e2) %>% 
+    mutate(Load = ts(Load, freq=24),
+           Load = na_ma(Load, k = 1, weighting = "simple"),
+           Load = tsclean(Load)) %>% 
+    select(3)
+})
+load_validation = lapply(load_data, function(x) {
+  x %>% 
+    filter(Date >= s3 & Date <= e3) %>% 
+    mutate(Load = ts(Load, freq=24),
+           Load = na_ma(Load, k = 1, weighting = "simple"),
+           Load = tsclean(Load)) %>% 
+    select(3)
+})
+
+# clear environment :
+rm(list=setdiff(ls(),c("load_data","load_4w","load_5m","load_validation")))
+options(warn=1)
+```
+
+#### Exploration
+
+Before modeling the time series data, we can produce a series of charts to get a better understanding of what we are going to examine.
+
+```{r echo=F}
+load_data %>% 
+  pluck("GR") %>% 
+  filter(Date <= "2021-01-31") %>%  # "2021-01-01" "2021-01-07"
+  mutate(dt = as.POSIXct(paste(Date,Time))) %>% 
+  ggplot(aes(x=dt, y=Load)) + 
+  geom_path(colour="royalblue1") +
+  labs(x="Date",title="Greece electrivity load consumption",subtitle="01/01/2021 - 31/01/2021")
+```
+
+At first glance, if we look at a whole month of data, there does not seem to be a specific trend, however there definitely is a seasonality component. Let's zoom in and investigate one week of data:
+
+```{r echo=F}
+load_data %>% 
+  pluck("GR") %>% 
+  filter(Date <= "2021-01-07") %>%  # "2021-01-01" "2021-01-07"
+  mutate(dt = as.POSIXct(paste(Date,Time))) %>% 
+  ggplot(aes(x=dt, y=Load)) + 
+  geom_path(colour="royalblue1") +
+  labs(x="Date",title="Greece electrivity load consumption",subtitle="01/01/2021 - 07/01/2021")
+```
+
+The seasonal component is becoming more clear now. An additional zoom in will give us more information:
+
+```{r echo=F}
+load_data %>% 
+  pluck("GR") %>% 
+  filter(Date <= "2021-01-01") %>%  # "2021-01-01" "2021-01-07"
+  mutate(dt = as.POSIXct(paste(Date,Time))) %>% 
+  ggplot(aes(x=dt, y=Load)) + 
+  geom_path(colour="royalblue1") +
+  labs(x="Date",title="Greece electrivity load consumption",subtitle="01/01/2021")
+
+load_data %>% 
+  pluck("GR") %>% 
+  filter(Date <= "2021-01-02" & Date > "2021-01-01") %>%  # "2021-01-01" "2021-01-07"
+  mutate(dt = as.POSIXct(paste(Date,Time))) %>% 
+  ggplot(aes(x=dt, y=Load)) + 
+  geom_path(colour="royalblue1") +
+  labs(x="Date",title="Greece electrivity load consumption",subtitle="02/01/2021")
+```
+
+From the last three charts, it is evident that there are multiple seasonalities in our load electricity data:
+
+* **Daily**: During the morning and afternoon hours, electricity consumption is much higher, due to increased human and economic activity. That seems to be the case on a daily basis.  
+* **Weekly**: Electricity consumption is likely to be lower on weekends, compared to weekdays, and we can expect that pattern to be constant in our data.
+
+From the above analysis, it is obvious that we are dealing with time series with multiple seasonalities. In the next section, we will dive into more details on this topic.
+
+## Multiple seasonality time series
+
+In order to break down our time series data in more detail, we can use [time series decomposition](https://en.wikipedia.org/wiki/Decomposition_of_time_series). This tool enables us to deconstruct a time series into its numerous components. The chart below gives us the desired breakdown for a month of data:
+
+```{r}
+load_4w %>% 
+  pluck("GR") %>% 
+  ts(freq=24) %>% 
+  decompose() %>% 
+  autoplot() +
+  labs(title="Greece electrivity load consumption - Decomposition",
+       subtitle="05/03/2022 - 01/04/2022")
+```
+
+In the first sub-chart, we have the original data-set, while the newt two indicate the trend and seasonality components of the time series (trend and seasonality, correspondingly). As mentioned before, we can confirm the fact that there is no evident trend, but multiple seasonalities.
+
+Over the duration of the course, the learning material involved various different approaches in time series forecasting methods, including (among others):
+
+* [TBATS](https://robjhyndman.com/papers/ComplexSeasonality.pdf) model (Exponential smoothing state-space model with Box-Cox transformation, ARMA errors, Trend and Seasonal components)
+* [MAPA](https://kourentzes.com/forecasting/2014/04/19/improving-forecasting-by-estimating-time-series-structural-components-across-multiple-frequencies/) (Multiple Aggregation Prediction Algorithm)
+* [thief](https://robjhyndman.com/publications/temporal-hierarchies/) (Temporal Hierarchical Forecasting)
+
+Nevertheless, Wayne and I agreed, after trial and error and using all of the models, to stick with the multiple seasonalities model. A fundamental goal for multiple [seasonal (MS) processes](https://www.robjhyndman.com/papers/multiseasonal.pdf) is to allow for the seasonal terms that represent a seasonal cycle to be updated more than once during the period of the cycle. Additionally, this approach can be suitable in cases "involving both high and low frequency data".
+
+## Period selection
+
+Now that the model has been determined, we have to select the training data for each time series. As noted previously, we have two sub-sets: 4 weeks and 5 months (20 weeks) of data. It has been shown that different time series perform differently given separate training sets. 
+
+We are going to take that approach one step further and include a third option for the training set. [Forecast combinations (Timmerman, 2016)](https://ideas.repec.org/h/eee/ecofch/1-04.html) is a fresh approach and has proven to extract accurate forecasts. In essence, given a number of $\geqslant$ 2 forecasts, we combine the forecasts by calculating the weighted average of the produced forecasts. In our case, we will simply introduce the simple average of the forecasts produced by the 4-week and 20-week forecasts:
+
+$$
+FC = 0.5 * 4week + 0.5 * 5month
+$$
+Overall, we will have a pool of three options in terms of the training set:
+
+* 4 weeks of data
+* 5 months of data
+* Combination of 4-week and 5-month data
+
+The selection of the best forecast will be made using the [mean absolute percentage error (MAPE)](https://en.wikipedia.org/wiki/Mean_absolute_percentage_error) - the smaller the error, the better the forecast.
+
+## Forecasts
+
+This section includes the `R` code we ran to produce and determine the best forecasts for each load consumption time series:
+
+```{r}
+# multiple seasonalities time series model
+# forecasting horizon
+h = 24*7
+
+# tables that will include the forecasts
+forecast_4w = array(NA,c(h,length(load_4w))) ; colnames(forecast_4w) = names(load_4w)
+forecast_5m = forecast_4w
+forecast_comb = forecast_4w
+
+# array with selected training period
+choice_period = array(NA,length(load_4w))
+
+for (i in 1:length(load_4w)) {
+  
+  # time series, train-validation split:
+  y1 <- load_4w[[i]] %>% ts(frequency=24)
+  y2 <- load_5m[[i]] %>% ts(frequency=24)
+  y1t <- head(y1, length(y1)-h)
+  y1v <- tail(y1, h)
+  y2t <- head(y2, length(y1)-h)
+  y2v <- tail(y2, h)
+  
+  # multi-seasonal time series format, train-validation split:
+  y1ms <- msts(load_4w[[i]],seasonal.periods = c(24,24*7))
+  y1mst <- head(y1ms, length(y1ms)-h)
+  y1msv <- tail(y1ms, h)
+  
+  y2ms <- msts(load_5m[[i]],seasonal.periods = c(24,24*7))
+  y2mst <- head(y2ms, length(y2ms)-h)
+  y2msv <- tail(y2ms, h)
+  
+  best_forecast <- array(NA,3)
+  period <-c("short","long","comb")
+  
+  fit1 <- stlm(y1mst, lambda = 0)
+  fit2 <- stlm(y2mst, lambda = 0)
+  forecast_4w[,i] <- as.vector(forecast::forecast(fit1, h=h)$mean)
+  forecast_5m[,i] <-as.vector(forecast::forecast(fit2, h=h)$mean)
+  forecast_comb[,i] <- 0.5*as.vector(forecast::forecast(fit1,h=h)$mean) + 
+    0.5*as.vector(forecast::forecast(fit2,h=h)$mean)
+  
+  # put forecast in best_forecast array
+  best_forecast[1] = accuracy(forecast_4w[,i],y1msv)[5] 
+  best_forecast[2] = accuracy(forecast_5m[,i],y1msv)[5] 
+  best_forecast[3] = accuracy(forecast_comb[,i],y1msv)[5]
+  # choose forecast based on MAPE value:
+  choice_period[i]=period[which.min(best_forecast)]
+}
+
+# save the selections and forecasts as new objects
+selections = tibble(Country=names(load_4w),`Training period`=as.vector(choice_period))
+forecasts = array(NA,c(h,length(load_4w))) ; colnames(forecasts) = names(load_4w)
+for (i in 1:length(load_4w)) {
+  if (selections[i,2]=="short") { forecasts[,i] = forecast_4w[,i] }
+  if (selections[i,2]=="long") { forecasts[,i] = forecast_5m[,i] }
+  if (selections[i,2]=="comb") { forecasts[,i] = forecast_comb[,i] }
+}
+rm(list=setdiff(ls(),c("load_data","load_4w","load_5m","load_validation","selections","forecasts")))
+```
+
+The next table indicates the best training set and forecast for every country:
+
+```{r echo=F}
+selections  %>% 
+  mutate(Country=c("Belgium","Finland","France","Germany","Greece","Italy","Poland",
+                   "Romania","Spain","Sweden"),
+         `Training period` = if_else(`Training period`=="short","4 weeks",
+                                     if_else(`Training period`=="long","5 months","Combination"))) %>% 
+  gt() %>% 
+  tab_header(title=md("**Selected training period for each country**"),
+             subtitle=html("<div style='color:#8e8e8e;'>Determined by which period gave he best forecast by MAPE</div><br/>")) %>% 
+  tab_footnote(footnote = "Combination = 0.5* 4-week forecast + 0.5* 5-month forecast", locations = cells_column_labels(2)) %>% 
+  tab_options(data_row.padding = px(1),
+              row.striping.background_color = "#eeeeee",
+              heading.align = "left",
+              heading.title.font.size = 20,
+              heading.subtitle.font.size = 16,
+              table.font.size = 15,
+              table.border.top.color = "transparent",
+              heading.border.bottom.color = "transparent",
+              column_labels.border.bottom.width = px(3),
+              column_labels.border.bottom.color = "#4c4c4c",
+              table_body.border.bottom.width = px(3),
+              table_body.border.bottom.color = "#4c4c4c",
+              table.border.bottom.color = "transparent") %>% 
+  opt_table_font(font = google_font("Rubik")) %>% 
+  opt_row_striping()
+```
+
+## Results & Evaluation
+
+The forecasts that were produced refer to a horizon of the next 7 days (or 168 hours). In order to enhance our analysis even more, we will compare these results with two benchmark forecasts:
+
+* **Seasonal naive model**: the forecast generated from the model would be the same as the last 7 days of historical data.
+* **Global average**: the forecast will e generated by the simple average of the past 4 weeks of historical data.
+
+After getting these forecasts, we will use the relative [mean absolute error](https://en.wikipedia.org/wiki/Mean_absolute_error) of the generated forecast and each of the benchmarks:
+
+$$
+RelMAE = \frac{mean(|Y_{forecast}-Y_{actual}|)}{mean(|Y_{benchmark}-Y_{actual}|)}
+$$
+
+If the final value is lower than 0, then our forecasts have improved better than the benchmarks.
+
+The next chunk of code calculates all the error measures and benchmark forecasts:
+
+```{r}
+# generate benchmarks using short period
+# seasonal naive
+forecast_snaive = lapply(load_4w, function(x) {
+  x %>% pull() %>% snaive(h=24*7) %>% as_tibble() %>% pull(1)
+})
+
+# global average
+forecast_global = lapply(load_4w, function(x) {
+  x %>% pull() %>% meanf(h=24*7) %>% as_tibble() %>% pull(1)
+})
+
+# create list with final objects
+# for every country: actual, forecast, snaive, global
+load_final = list()
+for (i in 1:length(load_4w)) {
+  load_final[[i]] = tibble(Load = load_validation[[i]] %>% pull,
+                           Load_pred = forecasts[,i],
+                           Load_snaive = forecast_snaive[[i]],
+                           Load_global = forecast_global[[i]])
+} ; rm(i)
+
+# accuracy measures 
+forecast_measures = lapply(load_final, function(x) {
+  return(
+    tibble(MAPE=accuracy(x$Load_pred,x$Load)[5],MPE=accuracy(x$Load_pred,x$Load)[4],
+           MAE = accuracy(x$Load_pred,x$Load)[3],
+           MAE_snaive=accuracy(x$Load_snaive,x$Load)[3], MAE_global=accuracy(x$Load_global,x$Load)[3],
+           relMAE_snaive=accuracy(x$Load_pred,x$Load)[3] / accuracy(x$Load_snaive,x$Load)[3],
+           relMAE_global=accuracy(x$Load_pred,x$Load)[3] / accuracy(x$Load_global,x$Load)[3])
+  )
+}) %>% 
+  bind_rows() %>% 
+  mutate(COUNTRY=selections$Country, .before=1)
+```
+
+An example of the produced forecasts and benchmarks can be viewed in the following chart:
+
+```{r echo=F}
+load_final %>%
+  pluck(5) %>%
+  rename(Actual=Load, MSTS=Load_pred, `Seasonal naive`=Load_snaive, `Global average`=Load_global) %>%
+  mutate(C = row_number()) %>%
+  pivot_longer(!C,names_to="FC") %>%
+  ggplot(aes(x=C,y=value,color=FC)) +
+  geom_line(aes(size=FC)) +
+  scale_color_manual(values=c("black","#ff0000","#028900","#8f139f")) +
+  scale_size_manual(values=c(1,0.5,0.5,0.5)) +
+  labs(title="Greece: electricity load consumption - Forecasts",subtitle="02/04/2022 - 08/04/2022",
+       x="",y="Load",color="",size="") +
+  theme(legend.position="bottom")
+```
+
+The final form of the results is contained in the table below:
+
+
+```{r echo=F}
+forecast_measures %>% 
+  gt() %>% 
+  tab_header(title=md("**Evaluation of forecasts**"),
+             subtitle=html("<div style='color:#8e8e8e;'>Forecasting horizon: 02/04/2022 - 08/04/2022</div>")) %>% 
+  cols_label(COUNTRY="Country",MAE="Forecast",MAE_snaive="Seasonal naive",MAE_global="Global average",
+             relMAE_snaive="Seasonal naive",relMAE_global="Global average") %>% 
+  tab_spanner(label="Relative MAE",columns=relMAE_snaive:relMAE_global) %>% 
+  tab_spanner(label="MAE ",columns=MAE:MAE_global) %>% 
+  fmt_number(columns=c(-1),decimals=2) %>% 
+  summary_rows(columns=relMAE_snaive:relMAE_global,fns=list(Median="median")) %>% 
+  tab_style(style = cell_borders(sides = "right",color="#4c4c4c"),locations = cells_body(columns = c(COUNTRY))) %>%
+  tab_style(style = cell_text(weight = "bold"), locations = cells_column_labels(everything())) %>%
+  tab_style(style = cell_text(weight = "bold"), locations = cells_column_spanners(everything())) %>% 
+  tab_options(data_row.padding = px(1),
+              row.striping.background_color = "#eeeeee",
+              heading.align = "left",
+              heading.title.font.size = 20,
+              heading.subtitle.font.size = 16,
+              table.font.size = 15,
+              table.border.top.color = "transparent",
+              heading.border.bottom.color = "transparent",
+              column_labels.border.bottom.width = px(3),
+              column_labels.border.bottom.color = "#4c4c4c",
+              table_body.border.bottom.width = px(3),
+              table_body.border.bottom.color = "#4c4c4c",
+              table.border.bottom.color = "transparent") %>% 
+  opt_table_font(font = google_font("Rubik")) %>% 
+  opt_row_striping()
+```
+
+We can see that most of the produced forecasts for electricity load consumption are out-performing the pre-determined benchmarks. Additionally, the median relative MAE on both occasions highlights that our forecasts were better, on average, than both of the benchmarks.
+
+<br><br>
+
+To conclude, the aim of this post was to describe the coursework material that was part of the Advanced Business Forecasting course, offered on the MSc Business Analytics program from the University of Bath. 
+
+Time series forecasting is a topic that is constantly evolving, especially with the emergence of machine learning models. However, it became evident that there are certain techniques, such as multiple seasonality models and combinations of forecasts can yield increasingly accurate forecasts and can be quite helpful in certain workflows.
