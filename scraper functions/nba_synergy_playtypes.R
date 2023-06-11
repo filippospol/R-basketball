@@ -7,7 +7,7 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-nba_synergy_playtypes = function(season,per_mode,playtype,player_or_team,grouping) {
+nba_synergy_playtypes = function(season,season_type="Regular%20Season",per_mode,playtype,player_or_team,grouping) {
   pacman::p_load(tidyverse,httr,jsonlite,glue,janitor)
   
   headers = c(
@@ -29,7 +29,7 @@ nba_synergy_playtypes = function(season,per_mode,playtype,player_or_team,groupin
          Isolation, Transition, PRBallHandler, PRRollMan, Postup, Spotup, Handoff, Cut, OffScreen, OffRebound, Misc')
   }
   
-  myurl <- GET(url = glue("https://stats.nba.com/stats/synergyplaytypes?LeagueID=00&PerMode={per_mode}&PlayType={playtype}&PlayerOrTeam={player_or_team}&SeasonType=Regular%20Season&SeasonYear={season}&TypeGrouping={grouping}"), 
+  myurl <- GET(url = glue("https://stats.nba.com/stats/synergyplaytypes?LeagueID=00&PerMode={per_mode}&PlayType={playtype}&PlayerOrTeam={player_or_team}&SeasonType={season_type}&SeasonYear={season}&TypeGrouping={grouping}"), 
                add_headers(.headers=headers))
   
   raw = fromJSON(content(myurl, "text")) %>% 
@@ -37,6 +37,6 @@ nba_synergy_playtypes = function(season,per_mode,playtype,player_or_team,groupin
   
   df = raw$rowSet %>% as.data.frame() ; names(df) = raw$headers %>% pluck(1)
   
-  tibble(df) %>% return()
+  tibble(df) %>% mutate(SEASON=season, .before=1) %>% select(-2) %>% return()
   
 }
