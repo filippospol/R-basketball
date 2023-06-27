@@ -39,7 +39,7 @@ pbp_onoff_ratings = function(season) {
     mutate(NET_RATING_ON=OFF_RATING_ON-DEF_RATING_ON,NET_RATING_OFF=OFF_RATING_OFF-DEF_RATING_OFF,
            NET_RATING_ON_OFF=OFF_RATING_ON_OFF-DEF_RATING_ON_OFF) %>%
     group_by(PLAYER_NAME) %>% 
-    summarise_at(vars(3:11), ~ sum(MIN*.)/sum(MIN)) %>%
+    summarise_at(vars(3:11), ~ sum(MIN*.,na.rm=T)/sum(MIN,na.rm=T)) %>%
     left_join(nba_leaguedashplayerstats(season=season) %>% pluck(1) %>% select(PLAYER_NAME,PLAYER_ID,TEAM_ID,TEAM_ABBREVIATION)
               ,.,by="PLAYER_NAME") %>% 
     return()
