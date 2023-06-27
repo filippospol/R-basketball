@@ -10,7 +10,7 @@
 pbp_onoff_ratings = function(season) {
   pacman::p_load(tidyverse,hoopR,httr,jsonlite,glue,janitor)
   
-  teams = nba_leaguedashteamstats(season=season) %>% pluck(1) %>% pull(TEAM_ID)
+  teams = nba_leaguedashplayerstats(season=season,measure_type="Base") %>% pluck(1) %>% distinct(TEAM_ID) %>% pull()
   
   dfoff = map_df(teams, function(x) {
     myurl=GET(url = glue("https://api.pbpstats.com/get-on-off/nba/stat?Season={season}&SeasonType=Regular%2BSeason&TeamId={x}&Stat=PtsPer100PossOpponent"))
