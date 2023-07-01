@@ -1,3 +1,12 @@
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+# This script scrapes team statistics from NBA Stats and PBP Stats
+# Author: Filippos Polyzos
+#
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 pacman::p_load(tidyverse,hoopR,httr,jsonlite,glue,janitor)
 get_nba_teamstats = function(season,season_type) {
   pacman::p_load(tidyverse,hoopR,httr,jsonlite,glue,janitor)
