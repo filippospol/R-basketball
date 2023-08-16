@@ -45,6 +45,7 @@ fls_pbp = function(gameid) {
        paste(INTERNATIONAL_FIRST_NAME, 
              INTERNATIONAL_FAMILY_NAME, collapse=", "))) %>% 
     select(1,2,7,8,3,4,5,30,27,28,11:16,QUALIFIER=Q) %>% 
+    mutate(GAME_ID=gameid, .before=1) %>%
     return()
 }
 
