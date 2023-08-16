@@ -41,8 +41,9 @@ fls_pbp = function(gameid) {
               summarise(Q=paste(QUALIFIER, collapse=", ")) %>% 
               select(-1)) %>% 
     rowwise() %>% 
-    mutate(PLAYER_NAME = paste(INTERNATIONAL_FIRST_NAME, 
-                               INTERNATIONAL_FAMILY_NAME, collapse=", ")) %>% 
+    mutate(PLAYER_NAME = ifelse(is.na(INTERNATIONAL_FIRST_NAME),NA,
+       paste(INTERNATIONAL_FIRST_NAME, 
+             INTERNATIONAL_FAMILY_NAME, collapse=", "))) %>% 
     select(1,2,7,8,3,4,5,30,27,28,11:16,QUALIFIER=Q) %>% 
     return()
 }
