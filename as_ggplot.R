@@ -6,7 +6,7 @@ as_ggplot <- function(x, ...) {
   if (inherits(x, "gtsummary")) x <- gtsummary::as_gt(x)
   
   path_gt_table_image <- fs::file_temp(ext = "png")
-  gt_table_image <- gt::gtsave(x, filename = path_gt_table_image, dpi=400, ...)
+  gt_table_image <- gt::gtsave(x, filename = path_gt_table_image, ...)
   
   table_img <-
     magick::image_read(path_gt_table_image) %>%
