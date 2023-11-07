@@ -9,8 +9,10 @@
 
 bbref_odds = function(season) {
   pacman::p_load(tidyverse,rvest,glue,janitor)
+
+  season0 = paste0(20,substr(season,6,7))
   
-  odds = "https://www.basketball-reference.com/leagues/NBA_{paste0(20,substr(season,6,7))}_preseason_odds.html" %>% 
+  odds = "https://www.basketball-reference.com/leagues/NBA_{season0}_preseason_odds.html" %>% 
     glue() %>% 
     read_html() %>% 
     html_elements("table") %>% 
