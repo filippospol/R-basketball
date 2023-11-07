@@ -9,8 +9,10 @@
 
 bbref_lineups = function(season) {
   pacman::p_load(tidyverse,rvest,glue,janitor,hoopR)
+
+  season0 = paste0(20,substr(season,6,7))
   
-  teams = "https://www.basketball-reference.com/leagues/NBA_{paste0(20,substr(season,6,7))}_per_game.html" %>% 
+  teams = "https://www.basketball-reference.com/leagues/NBA_{season0}_per_game.html" %>% 
     glue() %>% 
     read_html() %>% 
     html_elements("table") %>% 
@@ -23,7 +25,7 @@ bbref_lineups = function(season) {
     pull()
   
   n_lineups = map_df(teams[1:20], function(x) {
-    "https://www.basketball-reference.com/teams/{x}/2023_start.html" %>% 
+    "https://www.basketball-reference.com/teams/{x}/{season0}_start.html" %>% 
       glue() %>% 
       read_html() %>% 
       html_elements("table") %>% 
@@ -38,7 +40,7 @@ bbref_lineups = function(season) {
   Sys.sleep(60)
   n_lineups = bind_rows(n_lineups,
                         map_df(teams[21:30], function(x) {
-                          "https://www.basketball-reference.com/teams/{x}/2023_start.html" %>% 
+                          "https://www.basketball-reference.com/teams/{x}/{season0}_start.html" %>% 
                             glue() %>% 
                             read_html() %>% 
                             html_elements("table") %>% 
