@@ -1,13 +1,13 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-# This script returns team boxscore stats for a given game from FIBA Live Stats
+# This script returns boxscore stats for a given game from FIBA Live Stats
 # Author: Filippos Polyzos
 #
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-fls_team_boxscore = function(gameid) {
+fls_boxscore_team = function(gameid) {
   pacman::p_load(tidyverse,httr,jsonlite,glue,janitor)
   source("https://raw.githubusercontent.com/filippospol/R-basketball/main/scraper%20functions/fls_pbp.R")
   
@@ -54,4 +54,41 @@ fls_team_boxscore = function(gameid) {
            OPP_FG3A_RATE = round(OPP_FG3A/OPP_FGA,3)
     ) %>% 
     select(1:23,45:54) %>% return()
+}
+
+fls_boxscore2 = function(gameid) {
+  myurl = glue("https://fibalivestats.dcd.shared.geniussports.com/data/{gameid}/data.json") %>% 
+    as.character()
+  mydata = fromJSON(myurl)
+  
+  
+  home_name = mydata$tm$`1`$name
+  home_out = list()
+  for (i in 1:(mydata$tm$`1` %>% pluck("pl") %>% length())) {
+    home_out[[i]] = mydata$tm$`1` %>% pluck("pl") %>% pluck(i) %>% 
+      as.data.frame() %>% mutate_all(as.character) %>% mutate(TEAM=home_name)
+  }
+  
+  away_name = mydata$tm$`2`$name
+  away_out = list()
+  for (i in 1:(mydata$tm$`2` %>% pluck("pl") %>% length())) {
+    away_out[[i]] = mydata$tm$`2` %>% pluck("pl") %>% pluck(i) %>% 
+      as.data.frame() %>% mutate_all(as.character) %>% mutate(TEAM=away_name)
+  }
+  
+  bind_rows(home_out,away_out) %>% 
+    as_tibble() %>% 
+    clean_names("all_caps") %>% 
+    rename_with(~str_remove(., 'S_')) %>% 
+    mutate(PLAYER=paste0(FIRST_NAME," ",FAMILY_NAME),
+           MATCHUP=paste0(home_name," vs ",away_name)) %>% 
+    select(PLAYER,TEAM,MATCHUP,MIN=MINUTES,PTS=POINTS,
+           `2PM`=TWO_POINTERS_MADE,`2PA`=TWO_POINTERS_ATTEMPTED,
+           `3PM`=THREE_POINTERS_MADE,`3PA`=THREE_POINTERS_ATTEMPTED,
+           FTM=FREE_THROWS_MADE,FTA=FREE_THROWS_ATTEMPTED,
+           OREB=REBOUNDS_OFFENSIVE,DREB=REBOUNDS_DEFENSIVE,REB=REBOUNDS_TOTAL,
+           AST=ASSISTS,STL=STEALS,BLK=BLOCKS,TOV=TURNOVERS,PF=FOULS_PERSONAL) %>% 
+    filter(MIN != "0") %>% 
+    mutate_at(5:19, as.numeric) ; rm(home_name,home_out,away_name,away_out,i,mydata,myurl) %>% 
+    return()
 }
