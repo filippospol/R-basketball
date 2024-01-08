@@ -1,18 +1,21 @@
 pacman::p_load(tidyverse,rvest,ggimage,glue,janitor,hoopR)
-
 source("https://raw.githubusercontent.com/filippospol/R-basketball/main/scraper%20functions/bbref_lineups.R")
-source("https://raw.githubusercontent.com/filippospol/R-basketball/main/scraper%20functions/bbref_odds.R")
 
-season = "2022-23"
+season = "2023-24"
 
+# team lineups
 df1 = bbref_lineups(season=season)
-df2 = bbref_odds(season=season)
 
-continuity = left_join(df1,df2,by="TEAM_NAME") %>% 
-  left_join(nba_leaguedashteamstats(season=season) %>% 
-              pluck(1) %>% 
-              select(TEAM_ID,W,L),
-            by="TEAM_ID") ; rm(df1,df2)
+#O/U pre season predictions
+"https://www.sportsoddshistory.com/nba-regular-season-win-total-results-by-team/" %>% 
+  read_html() %>% 
+  html_elements("table") %>% 
+  html_table()
+
+# team winning %
+nba_leaguedashteamstats(season=season) %>% 
+  pluck(1) %>% 
+  select(TEAM_ID,W,L)
 
 continuity %>% 
   mutate(DELTA=REAL_WINS-PROJECTED_WINS,
