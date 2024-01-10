@@ -14,7 +14,8 @@ over_under = "https://www.sportsoddshistory.com/nba-regular-season-win-total-res
   pluck(1) %>% 
   row_to_names(row_number = 1) %>% 
   clean_names("all_caps") %>% 
-  mutate(X23_24=if_else(TEAM=="Portland Trail Blazers","28.5",X23_24)) %>% 
+  mutate(X23_24=substr(X23_24,1,3)) %>% 
+  mutate(X23_24=if_else(TEAM=="Portland Trail Blazers","28.5",X23_24)) %>%
   select(TEAM_NAME=TEAM,PROJECTED_WINS=X23_24)
 
 # team winning %
@@ -41,8 +42,8 @@ continuity %>%
   scale_y_continuous(labels=scales::percent, limits=c(-0.28,0.28)) +
   geom_hline(yintercept=0,linetype=2,alpha=0.4) +
   geom_image(aes(image=LOGO),size=0.06) +
-  labs(title=paste('Continuity Chart:',format(Sys.Date(), "%m/%d/%y")),
-       subtitle='Source: Basketball Reference',
+  labs(title=paste('Continuity Chart:',season),
+       subtitle=paste('Source: Basketball Reference | As of',format(Sys.Date(), "%m/%d/%y")),
        x='# of Distinct Starting Lineups / Games Played',
        y='Current W% - Projected W%',
        caption="Chart by: Filippos Polyzos | Inspired by Owen Phillips") +
