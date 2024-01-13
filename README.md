@@ -1,4 +1,4 @@
-## Analysing NBA Data
+## Analysing Basketball Data
 
 Hello! My name is Filippos and I love basketball analytics! I created this repository to gather several `R` scripts that I have been working on and help my look into interesting stuff that occur throughout each NBA season:
 * my custom options for tables and charts on `ggplot` and `gt` libraries.
