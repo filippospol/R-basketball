@@ -42,7 +42,7 @@ GGPLOT
 pacman::p_load(sysfonts,showtext,ggtext)
 
 # download font awesome locally first: https://fontawesome.com/download
-font_add_google("Rubik")
+font_add_google("Rubik","myfont")
 sysfonts::font_add("FA","C:/Users/phili/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf")
 showtext_auto()
 pc = "<span style='font-family:FA;'>&#xf099;</span> @filippos_pol"
@@ -50,7 +50,7 @@ pc = "<span style='font-family:FA;'>&#xf099;</span> @filippos_pol"
 ggplot() +
   # geom_xxx() +
   theme_minimal() +
-  theme(text=element_text(family="Rubik"),
+  theme(text=element_text(family="myfont"),
         plot.title=element_markdown(face="bold"),
         plot.subtitle=element_markdown(color="#777777"),
-        plot.caption=element_text(color="#777777"),hjust=0)
+        plot.caption=element_text(color="#777777",hjust=0))
