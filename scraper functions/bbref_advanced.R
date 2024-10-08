@@ -19,7 +19,8 @@ bbref_advanced = function(season) {
     pluck(1) %>% 
     clean_names("all_caps") %>% 
     group_by(PLAYER) %>% 
-    mutate(TEAM=gsub("TOT/","",paste0(TM,collapse="/"))) %>% 
+    mutate(TEAM=gsub("TOT/","",paste0(TEAM,collapse="/")),
+           TEAM=str_sub(TEAM,5)) %>% 
     filter(as.numeric(MP)==max(as.numeric(MP))) %>%
     ungroup() %>% 
     arrange(PLAYER)
