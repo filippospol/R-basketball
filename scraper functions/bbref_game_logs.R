@@ -68,7 +68,7 @@ bbref_game_log = function(gameID) {
   # Get away and home boxscores and add the additional info:
   rawBox = bind_rows(
     gameTables %>% 
-      pluck(1) %>% 
+      pluck(8) %>% 
       row_to_names(1) %>% 
       clean_names("all_caps") %>% 
       filter(STARTERS != "Reserves") %>% 
@@ -79,7 +79,7 @@ bbref_game_log = function(gameID) {
       mutate(GAME_ID=gameID,MATCHUP=matchup,DATE=date,TEAM=awayTeam,
              .before=1),
     gameTables %>% 
-      pluck(9) %>% 
+      pluck(16) %>% 
       row_to_names(1) %>% 
       clean_names("all_caps") %>% 
       filter(STARTERS != "Reserves") %>% 
@@ -96,11 +96,10 @@ bbref_game_log = function(gameID) {
     filter(PLAYER_NAME != "Team Totals") %>% 
     mutate(IS_STARTER=ifelse(grepl("[0-9]",MP),IS_STARTER,NA)) %>% 
     mutate(STATUS=ifelse(grepl("[0-9]",MP),"Active",MP),.before=MP) %>% 
-    mutate(across(MP:X,~ifelse(grepl("[0-9]",MP),.,NA))) %>% 
-    rename(PLUS_MINUS=X) %>% 
+    mutate(across(MP:BPM,~ifelse(grepl("[0-9]",MP),.,NA))) %>% 
     separate(MP,c("M","S"),sep=":") %>% 
-    mutate(MP=as.numeric(M)+(as.numeric(S)/60),.after=STATUS) %>% 
+    mutate(MP=round(as.numeric(M)+(as.numeric(S)/60),1),.after=STATUS) %>% 
     select(-c(M,S)) %>% 
-    mutate_at(9:28, as.numeric) %>% 
+    mutate_at(9:23, as.numeric) %>% 
     return()
 }
