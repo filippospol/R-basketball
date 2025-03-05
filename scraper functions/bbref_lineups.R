@@ -18,10 +18,10 @@ teams = "https://www.basketball-reference.com/leagues/NBA_{season0}_per_game.htm
   html_elements("table") %>% 
   html_table() %>% 
   pluck(1) %>% 
-  drop_na() %>% 
-  filter(!Tm %in% c("Tm","TOT")) %>% 
-  distinct(Tm) %>% 
-  arrange(Tm) %>% 
+  # drop_na() %>% 
+  filter(!Team %in% c("Team","TOT","","2TM","3TM")) %>% 
+  distinct(Team) %>% 
+  arrange(Team) %>% 
   pull()
 
 n_lineups = map_df(teams[1:20], function(x) {
