@@ -7,9 +7,14 @@
 #' - Eurocup
 #' - Basketball Champions League (BCL)
 #' - FIBA Europe Cup
+#' - NBL Australia
 
+# Load packages:
 pacman::p_load(tidyverse,hoopR,httr,rvest,jsonlite,janitor,stringr,glue)
 
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Functions:
 nba_scraper = function(season) {
   nba_leaguedashplayerstats(season=season,per_mode="Totals") %>% 
     pluck(1) %>% 
@@ -21,6 +26,8 @@ nba_scraper = function(season) {
     arrange(PLAYER) %>% 
     return()
 }
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 gleague_scraper = function(season) {
   season2=as.numeric(substr(season,1,4))+1
@@ -44,6 +51,8 @@ gleague_scraper = function(season) {
     arrange(PLAYER) %>% 
     return()
 }
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 elc_scraper = function(season,league) {
   season3=as.numeric(substr(season,1,4))
@@ -75,3 +84,80 @@ elc_scraper = function(season,league) {
       return()
   )
 }
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+bcl_scraper = function(season) {
+  season2=as.numeric(substr(season,1,4))+1
+  
+  suppressWarnings(
+    "https://basketball.realgm.com/international/league/106/Basketball-Champions-League-Europe/stats/{season2}/Totals/Qualified/All/points/All/desc/1/Regular_Season" %>% 
+      glue() %>% 
+      read_html() %>% 
+      html_elements("table") %>% 
+      html_table()
+  ) %>% 
+    pluck(1) %>% 
+    clean_names("all_caps") %>% 
+    select(PLAYER,MIN,PTS,FGA,FGM,FG_PCT=FG_PERCENT,
+           FG3A=X3PA,FG3M=X3PM,FG3_PCT=X3P_PERCENT,
+           FTA,FTM,FT_PCT=FT_PERCENT,OREB=ORB,DREB=DRB,AST,STL,BLK,TOV,PF) %>% 
+    mutate(MIN=gsub(",","",MIN)) %>% mutate(PTS=gsub(",","",PTS)) %>% 
+    mutate_at(-1, as.numeric) %>% 
+    mutate(FG2A=FGA-FG3A,FG2M=FGM-FG3M,FG2_PCT=round(FG2M/FG2A,3),.before=6) %>% 
+    mutate(SEASON=season,LEAGUE="BCL",.before=2) %>% 
+    arrange(PLAYER) %>% 
+    return()
+}
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+europecup_scraper = function(season) {
+  season2=as.numeric(substr(season,1,4))+1
+  
+  suppressWarnings(
+    "https://basketball.realgm.com/international/league/102/FIBA-Europe-Cup/stats/{season2}/Totals/Qualified/All" %>% 
+      glue() %>% 
+      read_html() %>% 
+      html_elements("table") %>% 
+      html_table()
+  ) %>% 
+    pluck(1) %>% 
+    clean_names("all_caps") %>% 
+    select(PLAYER,MIN,PTS,FGA,FGM,FG_PCT=FG_PERCENT,
+           FG3A=X3PA,FG3M=X3PM,FG3_PCT=X3P_PERCENT,
+           FTA,FTM,FT_PCT=FT_PERCENT,OREB=ORB,DREB=DRB,AST,STL,BLK,TOV,PF) %>% 
+    mutate(MIN=gsub(",","",MIN)) %>% mutate(PTS=gsub(",","",PTS)) %>% 
+    mutate_at(-1, as.numeric) %>% 
+    mutate(FG2A=FGA-FG3A,FG2M=FGM-FG3M,FG2_PCT=round(FG2M/FG2A,3),.before=6) %>% 
+    mutate(SEASON=season,LEAGUE="Europe Cup",.before=2) %>% 
+    arrange(PLAYER) %>% 
+    return()
+}
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+nblaus_scraper = function(season) {
+  season2=as.numeric(substr(season,1,4))+1
+  
+  suppressWarnings(
+    "https://basketball.realgm.com/international/league/5/Australian-NBL/stats/{season2}/Totals/Qualified/All" %>% 
+      glue() %>% 
+      read_html() %>% 
+      html_elements("table") %>% 
+      html_table()
+  ) %>% 
+    pluck(1) %>% 
+    clean_names("all_caps") %>% 
+    select(PLAYER,MIN,PTS,FGA,FGM,FG_PCT=FG_PERCENT,
+           FG3A=X3PA,FG3M=X3PM,FG3_PCT=X3P_PERCENT,
+           FTA,FTM,FT_PCT=FT_PERCENT,OREB=ORB,DREB=DRB,AST,STL,BLK,TOV,PF) %>% 
+    mutate(MIN=gsub(",","",MIN)) %>% mutate(PTS=gsub(",","",PTS)) %>% 
+    mutate_at(-1, as.numeric) %>% 
+    mutate(FG2A=FGA-FG3A,FG2M=FGM-FG3M,FG2_PCT=round(FG2M/FG2A,3),.before=6) %>% 
+    mutate(SEASON=season,LEAGUE="NBL Australia",.before=2) %>% 
+    arrange(PLAYER) %>% 
+    return()
+}
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
