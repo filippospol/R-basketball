@@ -10,7 +10,7 @@
 
 bbref_odds = function(season) {
   pacman::p_load(tidyverse,rvest,glue,janitor)
-
+  
   season0 = paste0(20,substr(season,6,7))
   
   odds = "https://www.basketball-reference.com/leagues/NBA_{season0}_preseason_odds.html" %>% 
@@ -25,6 +25,5 @@ bbref_odds = function(season) {
   odds %>% 
     mutate(PROJECTED_WINS=PROJECTED_WINS+0.5,
            REAL_WINS=as.numeric(substr(REAL_WINS,1,2))) %>% 
-    mutate_at(-1, ~./82) %>% 
     return()
 }
