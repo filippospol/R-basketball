@@ -9,9 +9,8 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-pacman::p_load(tidyverse,rvest,glue,janitor,lubridate)
-
 bbref_gameid_date = function(season,mm,dd) {
+  pacman::p_load(tidyverse,rvest,glue,janitor,lubridate)
   baseHTML = "https://www.basketball-reference.com/boxscores/?month={mm}&day={dd}&year={season}" %>% 
     glue() %>% 
     read_html()
