@@ -1,6 +1,16 @@
-pacman::p_load(tidyverse,rvest,glue,janitor,lubridate)
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+# This script scrapes game ids for a given date from Basketball Reference.
+# Season format: yyyy.
+# Use these ids to get bbref game logs to get `Inactive` or `DNP` status for players.
+# Author: Filippos Polyzos
+#
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 bbref_game_log = function(gameID) {
+  pacman::p_load(tidyverse,rvest,glue,janitor,lubridate)
   # HTML that contains the boxscore:
   baseHTML = "https://www.basketball-reference.com/boxscores/{gameID}.html" %>% 
     glue() %>% 
@@ -16,7 +26,8 @@ bbref_game_log = function(gameID) {
   matchup = matchup_date %>%
     pluck(1) %>%
     pluck(1) %>% 
-    gsub("at","@",.)
+    gsub(" at "," @ ",.) %>% 
+    gsub("^[^:]*: ", "", .)
   
   # date:
   date = matchup_date %>%
@@ -68,7 +79,7 @@ bbref_game_log = function(gameID) {
   # Get away and home boxscores and add the additional info:
   rawBox = bind_rows(
     gameTables %>% 
-      pluck(8) %>% 
+      pluck(1) %>% 
       row_to_names(1) %>% 
       clean_names("all_caps") %>% 
       filter(STARTERS != "Reserves") %>% 
@@ -79,7 +90,7 @@ bbref_game_log = function(gameID) {
       mutate(GAME_ID=gameID,MATCHUP=matchup,DATE=date,TEAM=awayTeam,
              .before=1),
     gameTables %>% 
-      pluck(16) %>% 
+      pluck(9) %>% 
       row_to_names(1) %>% 
       clean_names("all_caps") %>% 
       filter(STARTERS != "Reserves") %>% 
@@ -96,10 +107,16 @@ bbref_game_log = function(gameID) {
     filter(PLAYER_NAME != "Team Totals") %>% 
     mutate(IS_STARTER=ifelse(grepl("[0-9]",MP),IS_STARTER,NA)) %>% 
     mutate(STATUS=ifelse(grepl("[0-9]",MP),"Active",MP),.before=MP) %>% 
-    mutate(across(MP:BPM,~ifelse(grepl("[0-9]",MP),.,NA))) %>% 
+    mutate(across(MP:GM_SC,~ifelse(grepl("[0-9]",MP),.,NA))) %>% 
     separate(MP,c("M","S"),sep=":") %>% 
     mutate(MP=round(as.numeric(M)+(as.numeric(S)/60),1),.after=STATUS) %>% 
-    select(-c(M,S)) %>% 
-    mutate_at(9:23, as.numeric) %>% 
+    select(-c(M,S,X)) %>% 
+    mutate_at(8:27, as.numeric) %>% 
     return()
 }
+
+# NOT RUN
+# # Example:
+# source("https://raw.githubusercontent.com/filippospol/R-basketball/refs/heads/main/scraper%20functions/bbref_gameid_date.R")
+# IDs = bbref_gameid_date(2025,04,16)
+# lapply(IDs,bbref_game_log)
