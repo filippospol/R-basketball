@@ -28,5 +28,6 @@ suppressWarnings(
 ) %>% 
   mutate(TEAM_NAME=gsub("[*]","",TEAM_NAME)) %>% 
   mutate(TEAM_NAME=dplyr::if_else(TEAM_NAME=="Los Angeles Clippers","LA Clippers",TEAM_NAME)) %>%
-  slice_head(n=30)
+  slice_head(n=30) %>%
+  return()
 }
