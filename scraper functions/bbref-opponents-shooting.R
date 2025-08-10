@@ -29,5 +29,6 @@ bbref_opponents_shooting = function(season) {
     mutate(TEAM_NAME=gsub("[*]","",TEAM_NAME)) %>% 
     mutate(TEAM_NAME=dplyr::if_else(TEAM_NAME=="Los Angeles Clippers","LA Clippers",TEAM_NAME)) %>%
     slice_head(n=30) %>% 
-    rename_with(.fn=~paste0("OPP_",.), .cols=3:18)
+    rename_with(.fn=~paste0("OPP_",.), .cols=3:18) %>%
+    return()
 }
