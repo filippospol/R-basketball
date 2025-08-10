@@ -2,6 +2,9 @@ pacman::p_load(tidyverse,rvest,ggimage,glue,janitor,hoopR)
 source("https://raw.githubusercontent.com/filippospol/R-basketball/main/scraper%20functions/bbref_lineups.R")
 # Replicate chart from this F5 post https://thef5.substack.com/p/health-luck
 
+##### SOSOSOSOS
+# use the bbref functions now that odds script works!!!
+
 season = "2023-24"
 
 # team lineups
@@ -53,3 +56,4 @@ continuity %>%
         plot.subtitle=element_text(color="grey4"),
         plot.caption=element_text(hjust=0),
         axis.title=element_text(face="bold",color="darkgrey"))
+
