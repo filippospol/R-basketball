@@ -3,13 +3,13 @@
 
 # Setup environment:
 pacman::p_load(tidyverse,stringdist)
-setwd("C:/Users/phili/Documents/shiny-rpubs/player-similarity")
+# setwd("C:/Users/phili/Documents/shiny-rpubs/player-similarity")
 source("scraper-functions.R")
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Season of vectors:
-seasons = c(year_to_season(2020:2024))
+seasons = c(year_to_season(2022:2024))
 
 # Import data per league for given seasons:
 nba = map_df(seasons,nba_scraper)
