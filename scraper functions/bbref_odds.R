@@ -24,6 +24,9 @@ bbref_odds = function(season) {
   
   odds %>% 
     mutate(PROJECTED_WINS=PROJECTED_WINS+0.5,
-           REAL_WINS=as.numeric(substr(REAL_WINS,1,2))) %>% 
+           REAL_WINS=as.numeric(substr(REAL_WINS,1,2)),
+           SEASON=season,
+           TEAM_NAME=if_else(TEAM_NAME=="Los Angeles Clippers","LA Clippers",TEAM_NAME)) %>% 
+    select(c(4,1:3)) %>% 
     return()
 }
