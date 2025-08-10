@@ -25,7 +25,7 @@ bbref_advanced = function(season) {
         TRUE ~ TEAM
       )) %>% 
       group_by(PLAYER) %>% 
-      mutate(TEAM=gsub("2TM|3TM","",paste0(TEAM,collapse="/")),
+      mutate(TEAM=gsub("2TM|3TM|4TM","",paste0(TEAM,collapse="/")),
              TEAM=gsub("^/","",TEAM)) %>% 
       filter(as.numeric(MP)==max(as.numeric(MP))) %>%
       ungroup() %>% 
@@ -36,3 +36,4 @@ bbref_advanced = function(season) {
            AST_PCT=AST_PERCENT,STL_PCT=STL_PERCENT,BLK_PCT=BLK_PERCENT,TOV_PCT=TOV_PERCENT,USG_PCT=USG_PERCENT,PER,OWS:WS_48,OBPM:VORP) %>% 
     return()
 }
+
