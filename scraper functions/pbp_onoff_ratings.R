@@ -24,9 +24,9 @@ pbp_onoff_ratings = function(season) {
         select(PLAYER_NAME=NAME,TEAM_ID,MIN=MINUTES_ON,OFF_RATING_ON=ON,OFF_RATING_OFF=OFF,OFF_RATING_ON_OFF=ON_OFF)
     )
     if (x==30) {
-      cat(paste0("ON/OFF Defensive Rating for the ",season," season complete.\n"))
+      cat(paste0("ON/OFF Offensive Rating for the ",season," season complete.\n"))
       Sys.sleep(2);beepr::beep(10)
-    } 
+    } ; return(y)
   })
   # Defense ON/OFF:
   dfdef = map_df(seq_along(teams), function(x) {
