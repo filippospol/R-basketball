@@ -1,5 +1,5 @@
 #### Scraping data from PBP Stats
-
+ 
 This folder contains scraper functions that import stats from [PBP Stats](https://www.pbpstats.com/).
 
 This is a very useful resource, as it offers enhanced data from the play-by-play such as different types of shots, efficiency after different events, types of turnovers etc.
