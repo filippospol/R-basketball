@@ -1,17 +1,17 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-# This script scrapes player/team statistics from the official Euroleague website
+# This script scrapes player/team statistics from the official Euroleague website.
 # Author: Filippos Polyzos
 #
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-pacman::p_load(tidyverse,httr,jsonlite,janitor,glue)
-
-el_leaguedashstats = function(player_or_team,season,measure,per_mode) {
+el_leaguedashstats = function(player_or_team="players",season,measure="traditional",per_mode="perGame") {
   
   pacman::p_load(tidyverse,httr,jsonlite,janitor,glue)
+  
+  season = as.numeric(substr(season,1,4))
   
   if (! player_or_team %in% c("players","teams")) {
     stop("valid options for player_or_team argument are 'players' and 'teams'.")
@@ -38,5 +38,4 @@ el_leaguedashstats = function(player_or_team,season,measure,per_mode) {
       clean_names("all_caps") %>% 
       return()
   )
-  
 }
