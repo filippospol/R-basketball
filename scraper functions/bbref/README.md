@@ -1,4 +1,4 @@
-## Scraping data from Basketball Reference
+#### Scraping data from Basketball Reference
 
 In this folder you can find numerous functions that scrape data from [Basketball Reference](https://www.basketball-reference.com/).
 
