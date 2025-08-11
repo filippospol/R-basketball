@@ -2,7 +2,7 @@
 
 Hello! In this repository you can find several `R` scripts that I have been working on and help me look into interesting stuff that occur throughout each basketball season:
 
-* Scraper functions to extract data from [Basketball Reference](https://www.basketball-reference.com/), [Euroleague](https://www.euroleaguebasketball.net/en/euroleague/) and FIBA Live Stats.
+* Scraper functions to extract data from [Basketball Reference](https://www.basketball-reference.com/), [Euroleague](https://www.euroleaguebasketball.net/en/euroleague/) and PBP Stats.
 * Custom options for tables and charts on `ggplot` and `gt` libraries.
 * Fun projects!
 
