@@ -1,13 +1,13 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-# This script scrapes team shot distribution from PBP Stats
+# This script scrapes team shot distribution from PBP Stats.
 # Author: Filippos Polyzos
 #
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-pbp_shot_distribution = function(season,season_type="Regular Season",per_mode="PerGame") {
+pbp_teams_shot_distribution = function(season,season_type="Regular Season",per_mode="PerGame") {
   pacman::p_load(tidyverse,hoopR,httr,jsonlite,glue,janitor)
   
   if (season_type=="Regular Season") season_type="Regular%20Season"
