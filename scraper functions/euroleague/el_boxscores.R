@@ -1,7 +1,8 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-# This script scrapes boxscores from the official Euroleague website
+# This script scrapes boxscores from the official Euroleague website.
+# Game code extracted from EUroleague website url.
 # Author: Filippos Polyzos
 #
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -44,3 +45,4 @@ el_boxscores = function(gamecode, seasoncode) {
   }
   
 }
+
