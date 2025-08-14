@@ -60,6 +60,7 @@ nba_2manheatmap = function(season,team) {
   rm(list=setdiff(ls(),c("team","season","playersExpanded","playersMatrix")))
   
   # Generate chart:
+  suppressWarnings(
   playersMatrix %>% 
     as.data.frame() %>%
     rownames_to_column("P1") %>% 
@@ -75,4 +76,6 @@ nba_2manheatmap = function(season,team) {
          subtitle=paste0("At least 100 minutes per 2-man combo | Source: NBA Stats"), x="", y="",fill="") +
     theme(legend.position="none",
           axis.text.x = element_text(angle = 45,hjust=-0.25))
+)
+
 }
