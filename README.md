@@ -8,9 +8,9 @@ Hello! In this repository you can find several `R` scripts that I have been work
 
 #### Acknowledgements
 
-Strongly inspired by:
-* [Owen Phillips](https://twitter.com/owenlhjphillips)
-* [Todd Whitehead](https://twitter.com/CrumpledJumper)
-* [Tom Bassine](https://twitter.com/tvbassine)
-* [Daniel Bratulić](https://twitter.com/daniel_bratulic)
-* [Burak Can Koc](https://twitter.com/burakcankoc)
+* Strongly inspired by:
+* <a href="https://twitter.com/owenlhjphillips" target="_blank">Owen Phillips</a>
+* <a href="https://twitter.com/CrumpledJumper" target="_blank">Todd Whitehead</a>
+* <a href="https://twitter.com/tvbassine" target="_blank">Tom Bassine</a>
+* <a href="https://twitter.com/daniel_bratulic" target="_blank">Daniel Bratulić</a>
+* <a href="https://twitter.com/burakcankoc" target="_blank">Burak Can Koc</a>
